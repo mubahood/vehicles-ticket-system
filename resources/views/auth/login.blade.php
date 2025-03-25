@@ -36,26 +36,23 @@
                 <button type="submit" class="btn btn-primary btn-block btn-flat">{{ trans('admin.login') }}</button>
             </div>
         </div>
-        <div class="row">
+       {{--  <div class="row">
             <br>
-            <div class="col-xs-12">
-                {{-- did you forget your password --}}
+            <div class="col-xs-12"> 
                 <p>
                     Forgot your password? <a class="" href="{{ url('auth/password/reset') }}">Reset Password</a>.
                 </p>
             </div>
-        </div>
-        <hr>
-        <input type="hidden" name="remember" value="1">
+        </div> --}}
+          <input type="hidden" name="remember" value="1">
 
-        <div class="row">
+        {{-- <div class="row">
+                <hr>
+  
             <div class="col-xs-12 text-center  ">
                 <p class="text-center">OR</p>
                 <a href="{{ url('auth/register') }}" class="h5" style="color: rgb(10, 10, 226);"><b>Create Account</b></a>
-             </div>
-            <!-- /.col -->
-
-            <!-- /.col -->
-        </div>
+             </div> 
+        </div> --}}
     </form>
 @endsection

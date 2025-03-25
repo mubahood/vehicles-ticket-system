@@ -33,14 +33,14 @@
         <tr>
             <td style="width: 25%;"></td>
             <td class="text-center" style="width: 20%;">
-                <img style="width: 100px" src="{{ public_path('assets/images/coat_of_arms-min.png') }}">
+                <img style="width: 100px" src="{{ public_path('assets/images/logo.jpg') }}">
             </td>
             <td style="width: 25%;"></td>
         </tr>
         <tr>
             <td colspan="3" class="text-center">
                 <p style="font-size: 18px; font-weight: bold; margin-bottom: 0%!important">THE REPUBLIC OF UGANDA</p>
-                <p style="font-size: 18px; font-weight: bold; margin-bottom: 0%!important">TAX APPEALS TRIBUNAL</p>
+                <p style="font-size: 18px; font-weight: bold; margin-bottom: 0%!important">{{ env('APP_NAME') }}</p>
                 <p style="font-size: 12px;">
                     <strong>E-MAIL:</strong> info@tat.co.ug,
                     <strong>TELEPHONE:</strong> +256 0414 340 470/23268, NIC Building 7th & 8th Floor
@@ -52,7 +52,7 @@
 
     <h5 class="text-center mt-4 mb-4"><strong>FORM TAT 1</strong></h5>
     <p class="text-center">
-        IN THE TAX APPEALS TRIBUNAL AT @include('components.value-display', ['s' => 'TAX APPEALS TRIBUNAL (TAT)'])
+        IN THE {{ env('APP_NAME') }} AT @include('components.value-display', ['s' => env('APP_NAME') . ' (TAT)'])
         REGISTRY APPLICATION NUMBER @include('components.value-display', ['s' => $item->application_number])
         YEAR @include('components.value-display', ['s' => $item->year])
     </p>

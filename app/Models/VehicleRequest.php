@@ -28,20 +28,24 @@ class VehicleRequest extends Model
 
         static::creating(function ($model) {
             $model = self::do_prepare($model);
+            return $model;
         });
 
         static::updating(function ($model) {
             $model = self::do_prepare($model);
+            return $model;
         });
     }
 
     public static function do_prepare($model)
     {
-        $vehicle = Vehicle::find($model->vehicle_id);
-        if ($vehicle == null) {
-            throw new \Exception("Vehicle not found");
+        //IF type is Vehicle Request
+        if ($model->type == 'Vehicle') {
+            $vehicle = Vehicle::find($model->vehicle_id);
+            if ($vehicle == null) {
+                throw new \Exception("Vehicle not found");
+            }
         }
-
         $applicant = User::find($model->applicant_id);
         if ($applicant == null) {
             throw new \Exception("Applicant not found");
@@ -62,14 +66,52 @@ class VehicleRequest extends Model
             $model->security_return_status = 'Pending';
         }
 
-        if ($model->security_return_status == 'Approved') {
-            $model->return_state = 'Returned';
+        //status
+
+        //actual_return_time NOT PENDDING
+        if ($model->actual_return_time != null) {
+            $model->status = 'Completed';
         }
 
-        if ($model->security_exit_status == 'Approved') {
-            $model->exit_state = 'Approved';
-        }
+
 
         return $model;
     }
+
+    //has many material items
+    public function materialItems()
+    {
+        return $this->hasMany(MaterialItem::class);
+    }
+
+    //get title
+    public function getTitle()
+    {
+        if ($this->type == 'Vehicle') {
+            if ($this->vehicle) {
+                return $this->vehicle->registration_number . ' - ' . $this->vehicle->brand . ' - ' . $this->vehicle->model . ' - ' . $this->vehicle->vehicle_type;
+            } else {
+                return 'N/A';
+            }
+        } else if ($this->type == 'Materials') {
+            $materials = "";
+            foreach ($this->materialItems as $index => $materialItem) {
+                $materials .= $materialItem->type . ' - ' . $materialItem->quantity . ' ' . $materialItem->unit;
+                if ($index < $this->materialItems->count() - 1) {
+                    $materials .= ', ';
+                }
+            }
+            return $materials;
+        } else if ($this->type == 'Fuel') {
+            return 'Fuel Request';
+        } else {
+            return 'N/A';
+        }
+    }
+
+    //has many RequestHasDriver 
+    public function drivers()
+    {
+        return $this->hasMany(RequestHasDriver::class, 'vehicle_request_id');
+    } 
 }

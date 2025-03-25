@@ -23,6 +23,7 @@ class User extends Authenticatable implements JWTSubject
     //sendEmailVerificationNotification
     public function sendEmailVerificationNotification()
     {
+        return;
         $mail_verification_token = Utils::get_unique_text();
         $this->mail_verification_token = $mail_verification_token;
         $this->save();
@@ -53,6 +54,8 @@ class User extends Authenticatable implements JWTSubject
             throw $th;
         }
     }
+
+
 
     public function getJWTIdentifier()
     {

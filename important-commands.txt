@@ -25,15 +25,15 @@ php artisan migrate
  
 php artisan make:migration create_events_table
 
-php artisan make:migration add_type_to_vehicle_requests --table=vehicle_requests
+php artisan make:migration add_company_id_to_vehicle_requests --table=vehicle_requests
 
 
 Encore\Admin\Auth\Database\Administrator::class,
 php artisan admin:make FormSr4Controller --model=App\FormSr4
 php artisan admin:make ParticipantController --model=App\\Participant
 
-php artisan admin:make VehicleRequestController --model=App\Models\VehicleRequest
+php artisan admin:make CompanyController --model=App\Models\Company
  
-php artisan make:model VehicleRequest -m
+php artisan make:model RequestHasDriver -m
 
  

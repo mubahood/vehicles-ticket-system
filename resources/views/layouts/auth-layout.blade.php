@@ -42,17 +42,17 @@
     </style>
 </head>
 
-<body class="hold-transition login-page" style="background-color: rgb(255, 166, 0);">
+<body class="hold-transition login-page" style="background-color: #1e49a8;">
     <div class="login-box login-box-body">
         <div class="" style="border-radius: 15px!important">
             <div style="text-align: center;">
-                <img width="80px" src="{{ url('public/assets/images/logo.png') }}" alt="">
+                <img width="160px" src="{{ url('public/assets/images/logo.jpg') }}" alt="">
             </div>
             <p class="login-box-msg text-uppercase p-0 m-0"
                 style="color: black; font-weight: 800; margin-top: 15px;
             font-size: 18px; margin-bottom: 0px; line-height: 1;">
-                Tax Appeals Tribunal (TAT)</p>
-            <hr style="background-color: rgb(255, 166, 0); height: 5px; margin-top: 0px;">
+                {{ env('APP_NAME') }}</p>
+            <hr style="background-color: #1e49a8; height: 5px; margin-top: 0px;">
 
             @yield('content')
 

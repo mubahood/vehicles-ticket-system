@@ -4,7 +4,7 @@
 
 <?php
 
-$primt_color = '#c67d00';
+$primt_color = '#1e49a8';
 ?><style> 
   
     .content-header {

@@ -694,13 +694,7 @@ class Utils extends Model
     //send_schedule_email
     public static function send_schedule_email()
     {
-        $apps = Application::where([
-            'stage' => 'Scheduled',
-            'is_schedule_email_sent' => 'No'
-        ])->get();
-        foreach ($apps as $key => $mail) {
-            Application::send_schedule_email($mail);
-        }
+       
     }
 
     /**
@@ -711,74 +705,25 @@ class Utils extends Model
      */
     public static function notify_registrar_how_ura_has_submitted_defence()
     {
-        $apps = Application::where([
-            'stage' => 'Defence',
-            'has_ura_submitted_defence' => 'Yes',
-            'is_ura_defence_submitted_email_sent' => 'No'
-        ])->get();
-        foreach ($apps as $key => $mail) {
-            Application::notify_registrar_how_ura_has_submitted_defence($mail);
-        }
+        
     }
     public static function notify_ura_to_submit_defence()
-    {
-        $apps = Application::where([
-            'stage' => 'Defence',
-        ])
-            ->where('is_ura_defence_email_sent', '!=', 'Yes')
-            ->get();
-        foreach ($apps as $key => $mail) {
-            Application::notify_ura_to_submit_defence($mail);
-        }
+    { 
     }
 
     public static function get_emails_for_role($role_slug)
     {
-        $role = AdminRole::where([
-            'slug' => $role_slug
-        ])->first();
-        if ($role == null) {
-            return [];
-        }
-        $emails = [];
-        $user_ids = AdminRoleUser::where([
-            'role_id' => $role->id
-        ])->get()->pluck('user_id')->toArray();
-
-        $users = User::whereIn('id', $user_ids)->get();
-        $mails = [];
-        foreach ($users as $key => $user) {
-            $mail = $user->email;
-            if ($mail == null || strlen($mail) < 3) {
-                continue;
-            }
-            $emails[] =  $user->email;
-        }
-        return $emails;
+         
     }
 
     public static function get_tat_members()
     {
 
-        $users = [];
-        $user_ids = AdminRoleUser::whereIn('role_id', [
-            1,
-            2,
-            3
-        ])->get()->pluck('user_id')->toArray();
-        $users = User::whereIn('id', $user_ids)->get();
-        return $users;
     }
 
     public static function send_mails_for_pending_applications()
     {
-        $apps = Application::where([
-            'stage' => 'Pending',
-            'is_submition_email_sent' => 'No'
-        ])->get();
-        foreach ($apps as $key => $mail) {
-            Application::send_mails_for_pending_application($mail);
-        }
+     
     }
 
     public static function start_session()

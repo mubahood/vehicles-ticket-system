@@ -14,6 +14,11 @@ Route::group([
     $router->resource('departmets', DepartmetController::class);
     $router->resource('vehicles', VehicleController::class);
     $router->resource('vehicle-requests', VehicleRequestController::class);
+    $router->resource('materials-requests', VehicleRequestController::class);
+    $router->resource('leave-requests', VehicleRequestController::class);
+    $router->resource('all-requests', VehicleRequestController::class);
+    $router->resource('archived-requests', VehicleRequestController::class);
+    $router->resource('companies', CompanyController::class);
 
     
     $router->resource('training-provider-accreditations', TrainingProviderAccreditationController::class);

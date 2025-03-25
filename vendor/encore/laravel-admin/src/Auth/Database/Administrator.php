@@ -3,6 +3,7 @@
 namespace Encore\Admin\Auth\Database;
 
 use App\Models\Campus;
+use App\Models\Company;
 use App\Models\Departmet;
 use App\Models\UserHasProgram;
 use Carbon\Carbon;
@@ -42,6 +43,8 @@ class Administrator extends Model implements AuthenticatableContract, JWTSubject
     }
 
 
+
+
     protected $fillable = ['username', 'password', 'name', 'avatar', 'created_at_text'];
 
     /**
@@ -76,6 +79,12 @@ class Administrator extends Model implements AuthenticatableContract, JWTSubject
                 $m->name = trim($n);
             }
         });
+    }
+
+    //company
+    public function company()
+    {
+        return $this->belongsTo(Company::class, 'company_id');
     }
 
 

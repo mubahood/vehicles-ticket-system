@@ -11,7 +11,7 @@ return [
     | login page.
     |
     */
-    'name' => 'Tax Appeals Tribunal - Admin', 
+    'name' => env('APP_NAME').' - Admin', 
 
     /*
     |--------------------------------------------------------------------------
@@ -22,7 +22,7 @@ return [
     | `img` tag, eg '<img src="http://logo-url" alt="Admin logo">'.
     |
     */
-    'logo' => '<b>TAT</b> admin',
+    'logo' => '<b>'.env('SHORT_NAME').'</b> admin',
 
     /*
     |--------------------------------------------------------------------------
@@ -34,7 +34,7 @@ return [
     | '<img src="http://logo-url" alt="Admin logo">'.
     |
     */
-    'logo-mini' => '<b>TAT</b>',
+    'logo-mini' => '<b>'.env('SHORT_NAME').'</b>',
 
     /*
     |--------------------------------------------------------------------------

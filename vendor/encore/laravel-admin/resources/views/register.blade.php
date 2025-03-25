@@ -30,7 +30,7 @@
 </head>
 {{-- <body class="hold-transition login-page" @if (config('admin.login_background_image'))style="background: url({{config('admin.login_background_image')}}) no-repeat;background-size: cover;"@endif> --}}
 
-<body class="hold-transition login-page" style="background-color: rgb(255, 166, 0);">
+<body class="hold-transition login-page" style="background-color: #1e49a8;">
     <div class="login-box">
         <div class="login-logo">
 
@@ -45,8 +45,8 @@
             </center>
             <br>
             <p class="text-center" style="font-size: 18px;">Welcome To</p>
-            <p class="login-box-msg h3" style="color: black; font-weight: 800;">Tax Appeals Tribunal</p>
-            <hr style="background-color: rgb(255, 166, 0); height: 5px;">
+            <p class="login-box-msg h3" style="color: black; font-weight: 800;">{{ env('APP_NAME') }}</p>
+            <hr style="background-color: #1e49a8; height: 5px;">
             <br>
             <p class="text-center" style="font-size: 18px;">Login</p>
             <br>

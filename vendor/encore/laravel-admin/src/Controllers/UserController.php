@@ -2,6 +2,7 @@
 
 namespace Encore\Admin\Controllers;
 
+use App\Models\Company;
 use App\Models\Departmet;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
@@ -42,6 +43,15 @@ class UserController extends AdminController
         $grid->column('sex', 'Gender');
 
         //department_id
+        $grid->column('company_id', 'Company ')
+            ->display(function ($department_id) { 
+                if ($this->company) {
+                    return $this->company->name;
+                } else {
+                    return 'N/A';
+                }
+            })->sortable();
+
         $grid->column('department_id', 'Department')
             ->display(function ($department_id) {
                 if ($this->department) {
@@ -119,15 +129,19 @@ class UserController extends AdminController
         $connection = config('admin.database.connection');
 
         $form->display('id', 'ID');
-        $form->text('username', trans('admin.username'))
+        $form->text('email', 'Email Address')
             ->creationRules(['required', "unique:{$connection}.{$userTable}"])
-            ->updateRules(['required', "unique:{$connection}.{$userTable},username,{{id}}"]);
+            ->updateRules(['required', "unique:{$connection}.{$userTable},email,{{id}}"]);
 
         $form->text('name', trans('admin.name'))->rules('required');
         $form->radioCard('sex', 'Gender')
             ->options(['Male' => 'Male', 'Female' => 'Female'])
             ->rules('required');
         $departments = Departmet::all()->pluck('name', 'id');
+        //companies
+        $companies = Company::all()->pluck('name', 'id');
+        $form->select('company_id', 'Company')->options($companies)->rules('required');
+        //departments
         $form->select('department_id', 'Department')->options($departments)->rules('required');
         $form->date('dob', 'Date of birth');
         $form->text('address', 'Address');
