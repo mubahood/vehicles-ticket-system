@@ -64,9 +64,7 @@ class VehicleRequestController extends AdminController
                 $conds['hod_status'] = 'Approved';
                 $conds['gm_status'] = 'Pending';
             }
-            if ($u->isRole('employee')) {
-                $conds['applicant_id'] = $u->id;
-            }
+
             if ($u->isRole('security')) {
                 $conds['gm_status'] = 'Approved';
                 $conds['security_exit_status'] = 'Pending';
@@ -98,6 +96,12 @@ class VehicleRequestController extends AdminController
             $grid->disableExport();
         }
 
+        if ($u->isRole('employee')) {
+            $conds['applicant_id'] = $u->id;
+        }
+        if ($u->isRole('security')) {
+            $conds['gm_status'] = 'Approved';
+        }
 
         $grid->model()
             ->where($conds)
@@ -241,6 +245,16 @@ class VehicleRequestController extends AdminController
             })
             ->sortable()->hide();
 
+        //print
+        $grid->column('print', __('Print'))->display(function () {
+            //if gm not appoved, return N/A
+            if ($this->gm_status != 'Approved') {
+                return 'N/A';
+            }
+            $url = url('print-gatepass') . '?gatepass_id=' . $this->id;
+            return '<a href="' . $url . '" target="_blank" class="btn btn-xs btn-primary">Print</a>';
+        })->width(100);
+
 
         return $grid;
     }
@@ -347,7 +361,7 @@ class VehicleRequestController extends AdminController
             return $comment ?: 'N/A';
         });
 
-    
+
 
         return $show;
     }
@@ -380,6 +394,8 @@ class VehicleRequestController extends AdminController
                 $form->hasMany('drivers', 'Click on "NEW" to add Driver', function (Form\NestedForm $form) use ($users) {
                     $form->select('driver_id', 'Driver')->options($users->pluck('name', 'id'))->rules('required');
                 });
+                $form->divider();
+                $form->textarea('materials_requested', 'Passenger information (name, contact) seperated by comma.')->rules('required');
             }
             if (in_array('materials-requests', $segs)) {
                 $name_of_range  = "Requested time and Return time";
