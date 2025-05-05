@@ -8,9 +8,11 @@ use App\Models\Utils;
     <!-- Logo -->
     <a href="{{ admin_url('/') }}" class="logo">
         <!-- mini logo for sidebar mini 50x50 pixels -->
-        <span class="logo-mini">{!! env('SHORT_NAME') !!}</span>
+        {{-- <span class="logo-mini">{!! env('SHORT_NAME') !!}</span> --}}
+        <img class="logo-mini" src="{{ url('public/assets/images/logo.jpg') }}" alt="Logo">
+        <center><img class="logo-lg img img-fluid" style="height: 50px;" src="{{ url('public/assets/images/logo.jpg') }}" alt="Logo"></center>
         <!-- logo for regular state and mobile devices -->
-        <span class="logo-lg">{!! env('SHORT_NAME') !!}</span>
+    {{--     <span class="logo-lg">{!! env('SHORT_NAME') !!}</span> --}}
     </a>
 
     <!-- Header Navbar -->
