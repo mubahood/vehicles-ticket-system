@@ -27,7 +27,17 @@ class VehicleRequest extends Model
         parent::boot();
 
         static::creating(function ($model) {
+            $applicant = User::find($model->applicant_id);
+            if ($applicant == null) {
+                throw new \Exception("Applicant not found");
+            }
+            $department = Departmet::find($applicant->department_id);
+            if ($department == null) {
+                throw new \Exception("Department not found");
+            }
+
             $model = self::do_prepare($model);
+            $model->department_id = $department->id;
             return $model;
         });
 
@@ -113,5 +123,11 @@ class VehicleRequest extends Model
     public function drivers()
     {
         return $this->hasMany(RequestHasDriver::class, 'vehicle_request_id');
-    } 
+    }
+
+    //belongs to department
+    public function department()
+    {
+        return $this->belongsTo(Departmet::class, 'department_id');
+    }
 }

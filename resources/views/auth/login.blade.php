@@ -1,58 +1,50 @@
 @extends('layouts.auth-layout')
-@php
-    $url = '';
-@endphp
+
 @section('content')
-    <form action="{{ url('auth/login') }}" method="post">
-        <div class="form-group has-feedback {!! !$errors->has('username') ?: 'has-error' !!}">
+<form action="{{ url('auth/login') }}" method="post">
+    @csrf
 
-            @if ($errors->has('username'))
-                @foreach ($errors->get('username') as $message)
-                    <label class="control-label" for="inputError"><i
-                            class="fa fa-times-circle-o"></i>{{ $message }}</label><br>
-                @endforeach
-            @endif
+    <div class="form-group has-feedback {{ $errors->has('username') ? 'has-error' : '' }}">
+        <input
+            type="text"
+            name="username"
+            class="form-control"
+            placeholder="{{ trans('admin.username') }}"
+            value="{{ old('username') }}">
+        <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+        @if ($errors->has('username'))
+            @foreach ($errors->get('username') as $message)
+                <span class="help-block">
+                    <i class="fa fa-times-circle-o"></i> {{ $message }}
+                </span>
+            @endforeach
+        @endif
+    </div>
 
-            <input type="text" class="form-control" placeholder="{{ trans('admin.username') }}" name="username"
-                value="{{ old('username') }}">
-            <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+    <div class="form-group has-feedback {{ $errors->has('password') ? 'has-error' : '' }}">
+        <input
+            type="password"
+            name="password"
+            class="form-control"
+            placeholder="{{ trans('admin.password') }}">
+        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+        @if ($errors->has('password'))
+            @foreach ($errors->get('password') as $message)
+                <span class="help-block">
+                    <i class="fa fa-times-circle-o"></i> {{ $message }}
+                </span>
+            @endforeach
+        @endif
+    </div>
+
+    <input type="hidden" name="remember" value="1">
+
+    <div class="row">
+        <div class="col-xs-12">
+            <button type="submit" class="btn btn-primary btn-block btn-flat">
+                {{ trans('admin.login') }}
+            </button>
         </div>
-        <div class="form-group has-feedback {!! !$errors->has('password') ?: 'has-error' !!}">
-
-            @if ($errors->has('password'))
-                @foreach ($errors->get('password') as $message)
-                    <label class="control-label" for="inputError"><i
-                            class="fa fa-times-circle-o"></i>{{ $message }}</label><br>
-                @endforeach
-            @endif
-
-            <input type="password" value="{{ old('password') }}" class="form-control"
-                placeholder="{{ trans('admin.password') }}" name="password">
-            <span class="glyphicon glyphicon-lock form-control-feedback"></span>
-        </div>
-        <div class="row">
-            <div class="col-xs-12">
-                <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                <button type="submit" class="btn btn-primary btn-block btn-flat">{{ trans('admin.login') }}</button>
-            </div>
-        </div>
-       {{--  <div class="row">
-            <br>
-            <div class="col-xs-12"> 
-                <p>
-                    Forgot your password? <a class="" href="{{ url('auth/password/reset') }}">Reset Password</a>.
-                </p>
-            </div>
-        </div> --}}
-          <input type="hidden" name="remember" value="1">
-
-        {{-- <div class="row">
-                <hr>
-  
-            <div class="col-xs-12 text-center  ">
-                <p class="text-center">OR</p>
-                <a href="{{ url('auth/register') }}" class="h5" style="color: rgb(10, 10, 226);"><b>Create Account</b></a>
-             </div> 
-        </div> --}}
-    </form>
+    </div>
+</form>
 @endsection

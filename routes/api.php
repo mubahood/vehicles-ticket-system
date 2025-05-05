@@ -5,38 +5,7 @@ use App\Http\Controllers\ApiResurceController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
-|
-*/
-
-Route::get("gardens", [ApiResurceController::class, "gardens"]);
-Route::get("garden-activities", [ApiResurceController::class, "garden_activities"]);
-Route::get("crops", [ApiResurceController::class, "crops"]);
-Route::POST("gardens", [ApiResurceController::class, "garden_create"]); 
-
-
-
-Route::get("people", [ApiResurceController::class, "people"]);
-Route::POST("users/login", [ApiAuthController::class, "login"]);
-Route::POST("people", [ApiResurceController::class, "person_create"]);
-Route::get("jobs", [ApiResurceController::class, "jobs"]);
 Route::get('api/{model}', [ApiResurceController::class, 'index']);
-Route::get('groups', [ApiResurceController::class, 'groups']);
-Route::get('associations', [ApiResurceController::class, 'associations']);
-Route::get('institutions', [ApiResurceController::class, 'institutions']);
-Route::get('service-providers', [ApiResurceController::class, 'service_providers']);
-Route::get('counselling-centres', [ApiResurceController::class, 'counselling_centres']);
-Route::get('products', [ApiResurceController::class, 'products']);
-Route::get('events', [ApiResurceController::class, 'events']);
-Route::get('news-posts', [ApiResurceController::class, 'news_posts']);
-
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

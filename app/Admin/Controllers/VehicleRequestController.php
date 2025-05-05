@@ -56,13 +56,31 @@ class VehicleRequestController extends AdminController
         $u = Admin::user();
         //is_closed archived-requests
 
+
+        if ($u->isRole('hod')) {
+            $conds['hod_status'] = 'Pending';
+            $conds['department_id'] = $u->department_id;
+        }
+        if ($u->isRole('gm')) {
+            $conds['hod_status'] = 'Approved';
+            $conds['gm_status'] = 'Pending';
+        }
+
+        if ($u->isRole('security')) {
+            $conds['gm_status'] = 'Approved';
+        }
+
+
+
         if (in_array('vehicle-requests', $segs)) {
+            $conds['type'] = 'Vehicle';
             if ($u->isRole('hod')) {
                 $conds['hod_status'] = 'Pending';
             }
             if ($u->isRole('gm')) {
                 $conds['hod_status'] = 'Approved';
                 $conds['gm_status'] = 'Pending';
+                $conds['department_id'] = $u->department_id;
             }
 
             if ($u->isRole('security')) {
@@ -102,7 +120,7 @@ class VehicleRequestController extends AdminController
         if ($u->isRole('security')) {
             $conds['gm_status'] = 'Approved';
         }
- 
+
         $grid->model()
             ->where($conds)
             ->orderBy('id', 'desc');
@@ -133,6 +151,16 @@ class VehicleRequestController extends AdminController
                 'Materials' => 'Materials',
                 'Personnel' => 'Personnel',
             ]);
+
+        //department_id
+        $grid->column('department_id', __('Department'))
+            ->display(function ($department_id) {
+                if ($this->department) {
+                    return $this->department->name;
+                } else {
+                    return 'N/A';
+                }
+            })->sortable();
 
         $grid->column('requested_departure_time', __('Requested Departure Time'))
             ->display(function ($requested_departure_time) {
@@ -390,10 +418,19 @@ class VehicleRequestController extends AdminController
                 $form->hidden('type', __('Type'))->default('Vehicle');
                 $form->select('vehicle_id', __('Vehicle'))->options(Utils::get_dropdown(\App\Models\Vehicle::class, ['registration_number', 'id', 'brand', 'model', 'vehicle_type']))->rules('required');
                 $users = \App\Models\User::where('id', '!=', $u->id)->get();
+
+                $form->radio('is_somisy_vehicle', 'Is this a Somisy vehicle?')->options(['Yes' => 'Yes', 'No' => 'No'])->rules('required');
+                $form->radio('is_camp_resident', 'Is this a camp resident?')->options(['Yes' => 'Yes', 'No' => 'No'])->rules('required');
+                $form->radio('expatirate_type', 'Expatriate type')->options(['Yes' => 'Yes', 'No' => 'No', 'Escort' => 'Escort'])->rules('required');
+                $form->radio('licence_type', 'Licence type')->options(['Mali' => 'Mali', 'International' => 'International', 'No licence' => 'No licence'])->rules('required');
+
+
+
                 //has many drivers 
                 $form->hasMany('drivers', 'Click on "NEW" to add Driver', function (Form\NestedForm $form) use ($users) {
                     $form->select('driver_id', 'Driver')->options($users->pluck('name', 'id'))->rules('required');
                 });
+
                 $form->divider();
                 $form->textarea('materials_requested', 'Passenger information (name, contact) seperated by comma.')->rules('required');
             }
@@ -467,6 +504,8 @@ class VehicleRequestController extends AdminController
                     'Rejected' => 'Rejected'
                 ])->rules('required');
                 $form->text('gm_comment', 'GM Remarks');
+                $departments = \App\Models\Departmet::all()->pluck('name', 'id');
+                $form->select('department_id', 'Department')->options($departments)->rules('required');
             }
             if ($u->isRole('security') && $record->gm_status == 'Approved') {
                 $form->radio('security_exit_status', 'Security Exit Status')->options([

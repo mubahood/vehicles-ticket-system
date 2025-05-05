@@ -19,4 +19,10 @@ class RequestHasDriver extends Model
     {
         return $this->belongsTo(VehicleRequest::class, 'vehicle_request_id');
     } 
+
+    //belongs to driver
+    public function driver()
+    {
+        return $this->belongsTo(User::class, 'driver_id');
+    }
 }

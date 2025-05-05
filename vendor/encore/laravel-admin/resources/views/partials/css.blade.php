@@ -1,12 +1,11 @@
 @foreach($css as $c)
-    <link rel="stylesheet" href="{{ admin_asset("$c") }}">
+<link rel="stylesheet" href="{{ admin_asset("$c") }}">
 @endforeach
 
 <?php
 
-$primt_color = '#1e49a8';
-?><style> 
-  
+$primt_color = '#134169';
+?><style>
     .content-header {
         /* background-color: #F9F9F9; */
     }
@@ -28,7 +27,13 @@ $primt_color = '#1e49a8';
     .btn-instagram,
     .btn-primary,
     .navbar-static-top {
-        background-color: {{ $primt_color }} !important;
+        background-color: {
+                {
+                $primt_color
+            }
+        }
+
+        !important;
     }
 
     .dropdown-menu {
@@ -36,13 +41,26 @@ $primt_color = '#1e49a8';
     }
 
     .box-success {
-        border-top: {{ $primt_color }} .5rem solid !important;
+        border-top: {
+                {
+                $primt_color
+            }
+        }
+
+        .5rem solid !important;
     }
 
     :root {
-        --primary: {{ $primt_color }};
+        --primary: {
+                {
+                $primt_color
+            }
+        }
+
+        ;
     }
+
     .card {
         box-shadow: rgba(0, 0, 0, 0.1) 0px 20px 25px -5px, rgba(0, 0, 0, 0.04) 0px 10px 10px -5px;
     }
-</style> 
+</style>

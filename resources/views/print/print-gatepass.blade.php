@@ -102,11 +102,15 @@
                 <tr><th>Registration No.</th><td>{{ $item->vehicle->registration_number ?? 'N/A' }}</td></tr>
                 <tr><th>Make/Model</th><td>{{ $item->vehicle->brand ?? '' }} {{ $item->vehicle->model ?? 'N/A' }}</td></tr>
                 <tr><th>Vehicle Type</th><td>{{ $item->vehicle->vehicle_type ?? 'N/A' }}</td></tr>
+                <tr><th>Is somisy vehicle?</th><td>{{ $item->is_somisy_vehicle ?? 'N/A' }}</td></tr>
+                <tr><th>Is Camp Resident?</th><td>{{ $item->is_camp_resident ?? 'N/A' }}</td></tr>
+                <tr><th>Expatriate</th><td>{{ $item->expatirate_type ?? 'N/A' }}</td></tr>
+                <tr><th>Licence type</th><td>{{ $item->licence_type ?? 'N/A' }}</td></tr>
                 <tr>
                     <th>Driver(s)</th>
                     <td>
                         @forelse($item->drivers as $driverEntry)
-                           {{ $driverEntry->user->name ?? 'N/A' }} (ID: {{ $driverEntry->driver_id }})<br>
+                           {{ $driverEntry->driver->name ?? 'N/A' }} (ID: {{ $driverEntry->driver_id }})<br>
                         @empty
                             No driver assigned.
                         @endforelse

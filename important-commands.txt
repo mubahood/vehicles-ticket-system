@@ -25,7 +25,7 @@ php artisan migrate
  
 php artisan make:migration create_events_table
 
-php artisan make:migration add_company_id_to_vehicle_requests --table=vehicle_requests
+php artisan make:migration add_department_id_to_vehicle_requests --table=vehicle_requests
 
 
 Encore\Admin\Auth\Database\Administrator::class,

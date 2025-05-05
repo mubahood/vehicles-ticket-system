@@ -9,7 +9,7 @@
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
 
     @if (!is_null($favicon = Admin::favicon()))
-        <link rel="shortcut icon" href="{{ $favicon }}">
+    <link rel="shortcut icon" href="{{ $favicon }}">
     @endif
 
     <!-- Bootstrap 3.3.5 -->
@@ -30,7 +30,7 @@
 </head>
 {{-- <body class="hold-transition login-page" @if (config('admin.login_background_image'))style="background: url({{config('admin.login_background_image')}}) no-repeat;background-size: cover;"@endif> --}}
 
-<body class="hold-transition login-page" style="background-color: #1e49a8;">
+<body class="hold-transition login-page" style="background-color: #134169;">
     <div class="login-box">
         <div class="login-logo">
 
@@ -46,7 +46,7 @@
             <br>
             <p class="text-center" style="font-size: 18px;">Welcome To</p>
             <p class="login-box-msg h3" style="color: black; font-weight: 800;">{{ env('APP_NAME') }}</p>
-            <hr style="background-color: #1e49a8; height: 5px;">
+            <hr style="background-color: #134169; height: 5px;">
             <br>
             <p class="text-center" style="font-size: 18px;">Login</p>
             <br>
@@ -55,10 +55,10 @@
                 <div class="form-group has-feedback {!! !$errors->has('username') ?: 'has-error' !!}">
 
                     @if ($errors->has('username'))
-                        @foreach ($errors->get('username') as $message)
-                            <label class="control-label" for="inputError"><i
-                                    class="fa fa-times-circle-o"></i>{{ $message }}</label><br>
-                        @endforeach
+                    @foreach ($errors->get('username') as $message)
+                    <label class="control-label" for="inputError"><i
+                            class="fa fa-times-circle-o"></i>{{ $message }}</label><br>
+                    @endforeach
                     @endif
 
                     <input type="text" class="form-control" placeholder="{{ trans('admin.username') }}"
@@ -68,10 +68,10 @@
                 <div class="form-group has-feedback {!! !$errors->has('password') ?: 'has-error' !!}">
 
                     @if ($errors->has('password'))
-                        @foreach ($errors->get('password') as $message)
-                            <label class="control-label" for="inputError"><i
-                                    class="fa fa-times-circle-o"></i>{{ $message }}</label><br>
-                        @endforeach
+                    @foreach ($errors->get('password') as $message)
+                    <label class="control-label" for="inputError"><i
+                            class="fa fa-times-circle-o"></i>{{ $message }}</label><br>
+                    @endforeach
                     @endif
 
                     <input type="password" class="form-control" placeholder="{{ trans('admin.password') }}"
@@ -81,13 +81,13 @@
                 <div class="row">
                     <div class="col-xs-8">
                         @if (config('admin.auth.remember'))
-                            <div class="checkbox icheck">
-                                <label>
-                                    <input type="checkbox" name="remember" value="1"
-                                        {{ !old('username') || old('remember') ? 'checked' : '' }}>
-                                    {{ trans('admin.remember_me') }}
-                                </label>
-                            </div>
+                        <div class="checkbox icheck">
+                            <label>
+                                <input type="checkbox" name="remember" value="1"
+                                    {{ !old('username') || old('remember') ? 'checked' : '' }}>
+                                {{ trans('admin.remember_me') }}
+                            </label>
+                        </div>
                         @endif
                     </div>
                     <!-- /.col -->
