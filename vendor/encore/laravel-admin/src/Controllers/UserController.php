@@ -65,7 +65,6 @@ class UserController extends AdminController
         $grid->column('dob', 'Date of birth')->sortable();
         $grid->column('address', 'Address');
         $grid->column('roles', trans('admin.roles'))
-            ->hide()
             ->pluck('name')->label();
         $grid->column('created_at', 'Registered')->sortable();
 

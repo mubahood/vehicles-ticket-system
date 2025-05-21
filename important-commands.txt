@@ -32,8 +32,8 @@ Encore\Admin\Auth\Database\Administrator::class,
 php artisan admin:make FormSr4Controller --model=App\FormSr4
 php artisan admin:make ParticipantController --model=App\\Participant
 
-php artisan admin:make CompanyController --model=App\Models\Company
+php artisan admin:make ExitRecordController --model=App\Models\ExitRecord
  
-php artisan make:model RequestHasDriver -m
+php artisan make:model ExitRecord -m
 
  

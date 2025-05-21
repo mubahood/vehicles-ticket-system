@@ -21,4 +21,5 @@ Route::group([
     $router->resource('all-requests', VehicleRequestController::class);
     $router->resource('archived-requests', VehicleRequestController::class);
     $router->resource('companies', CompanyController::class); 
+    $router->resource('exit-records', ExitRecordController::class);
 });

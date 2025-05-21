@@ -61,6 +61,7 @@ return array(
     'App\\Http\\Middleware\\VerifyCsrfToken' => $baseDir . '/app/Http/Middleware/VerifyCsrfToken.php',
     'App\\Models\\Company' => $baseDir . '/app/Models/Company.php',
     'App\\Models\\Departmet' => $baseDir . '/app/Models/Departmet.php',
+    'App\\Models\\ExitRecord' => $baseDir . '/app/Models/ExitRecord.php',
     'App\\Models\\MaterialItem' => $baseDir . '/app/Models/MaterialItem.php',
     'App\\Models\\RequestHasDriver' => $baseDir . '/app/Models/RequestHasDriver.php',
     'App\\Models\\User' => $baseDir . '/app/Models/User.php',

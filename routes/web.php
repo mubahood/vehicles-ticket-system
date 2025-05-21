@@ -11,6 +11,7 @@ use App\Models\VehicleRequest;
 use Encore\Admin\Facades\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -31,4 +32,12 @@ Route::get('print-gatepass', function (Request $request) {
     ]));
     return $pdf->stream();
 });
- 
+
+
+//endpoint for migration
+Route::get('migrate', function () {
+    //artisan migrate
+    Artisan::call('migrate', ['--force' => true]);
+    $output = Artisan::output();
+    return nl2br($output); 
+});

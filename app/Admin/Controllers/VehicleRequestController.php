@@ -162,14 +162,14 @@ class VehicleRequestController extends AdminController
                 }
             })->sortable();
 
-        $grid->column('requested_departure_time', __('Requested Departure Time'))
+        /*        $grid->column('requested_departure_time', __('Requested Departure Time'))
             ->display(function ($requested_departure_time) {
                 return date('d-m-Y H:i:s', strtotime($requested_departure_time));
             })->sortable();
         $grid->column('requested_return_time', __('Requested Return Time'))
             ->display(function ($requested_return_time) {
                 return date('d-m-Y H:i:s', strtotime($requested_return_time));
-            })->sortable();
+            })->sortable(); */
         $grid->column('actual_return_time', __('Actual Return Time'))
             ->display(function ($actual_return_time) {
                 return date('d-m-Y H:i:s', strtotime($actual_return_time));
@@ -207,17 +207,6 @@ class VehicleRequestController extends AdminController
                 'Rejected' => 'danger',
             ])->sortable();
         $grid->column('security_exit_status', __('Exit Status'))
-            ->display(function ($value) {
-                return $value;
-            })
-            ->label([
-                'Pending' => 'warning',
-                'Approved' => 'success',
-                'Rejected' => 'danger',
-            ])
-            ->sortable();
-
-        $grid->column('security_return_status', __('Return status'))
             ->display(function ($value) {
                 return $value;
             })
@@ -277,11 +266,29 @@ class VehicleRequestController extends AdminController
         $grid->column('print', __('Print'))->display(function () {
             //if gm not appoved, return N/A
             if ($this->gm_status != 'Approved') {
+
                 return 'N/A';
             }
             $url = url('print-gatepass') . '?gatepass_id=' . $this->id;
             return '<a href="' . $url . '" target="_blank" class="btn btn-xs btn-primary">Print</a>';
         })->width(100);
+        $grid->column('exit_record_view', __('Exit Records (View)'))->display(function () {
+            //if gm not appoved, return N/A
+            if ($this->gm_status != 'Approved') {
+                return 'N/A';
+            }
+            $recs_count = $this->exitRecords()->count();
+            $url_view_record = admin_url('exit-records?vehicle_request_id=' . $this->id);
+            return '<a href="' . $url_view_record . '" class="btn btn-xs btn-primary">View Exit Records (' . $recs_count . ')</a>';
+        });
+        $grid->column('exit_record', __('Exit Records (Add)'))->display(function () {
+            //if gm not appoved, return N/A
+            if ($this->gm_status != 'Approved') {
+                return 'N/A';
+            }
+            $url_add_record = admin_url('exit-records/create?vehicle_request_id=' . $this->id);
+            return '<a href="' . $url_add_record . '" class="btn btn-xs btn-primary">Add Exit Record</a>';
+        });
 
 
         return $grid;
@@ -328,12 +335,12 @@ class VehicleRequestController extends AdminController
         });
 
         // Time Information
-        $show->field('requested_departure_time', __('Requested Departure Time'))->display(function ($time) {
+        /*  $show->field('requested_departure_time', __('Requested Departure Time'))->display(function ($time) {
             return date('d-m-Y H:i:s', strtotime($time));
         });
         $show->field('requested_return_time', __('Requested Return Time'))->display(function ($time) {
             return date('d-m-Y H:i:s', strtotime($time));
-        });
+        }); */
         $show->field('actual_departure_time', __('Actual Departure Time'))->display(function ($time) {
             return $time ? date('d-m-Y H:i:s', strtotime($time)) : 'N/A';
         });
@@ -359,7 +366,8 @@ class VehicleRequestController extends AdminController
         $show->field('gm_status', __('GM Status'))->display(function ($status) {
             return $status ?: 'N/A';
         });
-        $show->field('security_exit_status', __('Security Exit Status'))->display(function ($status) {
+        $show->field('security_exit_status', __('
+        '))->display(function ($status) {
             return $status ?: 'N/A';
         });
         $show->field('security_return_status', __('Security Return Status'))->display(function ($status) {
@@ -508,7 +516,7 @@ class VehicleRequestController extends AdminController
                 $form->select('department_id', 'Department')->options($departments)->rules('required');
             }
             if ($u->isRole('security') && $record->gm_status == 'Approved') {
-                $form->radio('security_exit_status', 'Security Exit Status')->options([
+               /*  $form->radio('security_exit_status', 'Security Exit Status')->options([
                     'Pending' => 'Pending',
                     'Approved' => 'Approved',
                     'Rejected' => 'Rejected'
@@ -516,7 +524,7 @@ class VehicleRequestController extends AdminController
                     ->when('Approved', function (Form $form) {
                         $form->datetime('actual_departure_time', 'Actual departure time')->rules('required');
                         $form->radio('exit_state', 'Exit State')->options(['Good' => 'Good', 'Fair' => 'Fair', 'Bad' => 'Bad'])->rules('required');
-                    });
+                    }); */
             }
 
             if ($u->isRole('security') && $record->security_exit_status == 'Approved') {

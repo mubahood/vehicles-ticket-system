@@ -21,6 +21,12 @@ class VehicleRequest extends Model
         return $this->belongsTo(Vehicle::class, 'vehicle_id');
     }
 
+    //has many exitRecords
+    public function exitRecords()
+    {
+        return $this->hasMany(ExitRecord::class, 'vehicle_request_id');
+    } 
+
     //boot
     protected static function boot()
     {

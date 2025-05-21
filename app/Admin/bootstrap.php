@@ -37,7 +37,8 @@ $max = 300;
 $user_ids = User::all()->pluck('id')->toArray();
 $faker = Faker\Factory::create(); 
 $vehicles_ids = Vehicle::all()->pluck('id')->toArray();
- 
+//ADD exit-records TO MENU
+
 /* 
     "id" => 3
     "created_at" => "2025-03-24 10:24:19"
