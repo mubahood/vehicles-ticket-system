@@ -19,8 +19,8 @@ class CreateImportUserDataTable extends Migration
             $table->timestamps();
             $table->foreignIdFor(Departmet::class, 'department_id')
                 ->nullable();
-            $table->string('status')->default('Pending');
-            $table->file('title')->nullable();
+            $table->text('status')->nullable();
+            $table->text('title')->nullable();
         });
     }
 
