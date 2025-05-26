@@ -147,7 +147,7 @@
 <body>
     <div class="container">
         <table
-            style="width: 100%; margin-bottom: 20px; background-color: #17406D; color: white; padding: 10px; padding-bottom: 20px;">
+            style="width: 100%; margin-bottom: 20px; background-color: #0F3369; color: white; padding: 10px; padding-bottom: 20px;">
             <tr>
                 <td>
                     <h2 style="margin: 0; color: white; font-size: 20px; font-weight: bold;">
