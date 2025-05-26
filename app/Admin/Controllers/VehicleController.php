@@ -95,7 +95,8 @@ class VehicleController extends AdminController
         $form->text('model', __('Model'));
         $form->color('color', __('Color'));
         $form->text('year', __('Year'));
-        $form->text('status', __('Status'))->default('Active')->rules('required');
+        $form->radio('status', __('Status'))->default('Active')->rules('required')
+            ->options(['Active' => 'Active', 'Inactive' => 'Inactive']);
 
         return $form;
     }

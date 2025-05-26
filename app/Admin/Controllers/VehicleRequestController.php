@@ -62,6 +62,10 @@ class VehicleRequestController extends AdminController
                 ->select(Utils::get_dropdown(\App\Models\User::class, ['name', 'id']));
             $filter->equal('vehicle_id', __('Vehicle'))
                 ->select(Utils::get_dropdown(\App\Models\Vehicle::class, ['registration_number', 'id', 'brand', 'model', 'vehicle_type']));
+
+            //html that says, if vehicle is not found, click here to add a new vehicle and refresh the page after adding
+
+
             $filter->equal('department_id', __('Department'))
                 ->select(Utils::get_dropdown(\App\Models\Departmet::class, ['name', 'id']));
             $filter->between('created_at', __('Date'))->datetime();
@@ -452,6 +456,8 @@ class VehicleRequestController extends AdminController
                 $name_of_range = "Departure and Return time";
                 $form->hidden('type', __('Type'))->default('Vehicle');
                 $form->select('vehicle_id', __('Vehicle'))->options(Utils::get_dropdown(\App\Models\Vehicle::class, ['registration_number', 'id', 'brand', 'model', 'vehicle_type']))->rules('required');
+                $form->html('if vehicle is not found, click here to add a new vehicle and refresh the page after adding<br>
+            <a href="' . admin_url('vehicles/create') . '" class="btn btn-xs btn-primary" target="_blank">Add New Vehicle</a>');
                 $users = \App\Models\User::where('id', '!=', $u->id)->get();
 
                 $form->radio('is_somisy_vehicle', 'Is this a Somisy vehicle?')->options(['Yes' => 'Yes', 'No' => 'No'])->rules('required');
@@ -485,9 +491,6 @@ class VehicleRequestController extends AdminController
                 $form->radio('materials_requested', 'Leave Type')->options(['Annual' => 'Annual', 'Sick' => 'Sick', 'Maternity' => 'Maternity', 'Paternity' => 'Paternity', 'Study' => 'Study', 'Compassionate' => 'Compassionate', 'Special' => 'Special'])->rules('required');
             }
 
-            $form->divider();
-            $form->datetimeRange('requested_departure_time', 'requested_return_time', $name_of_range)->rules('required');
-            $form->text('destination', __('Destination'))->rules('required');
             $form->textarea('justification', __('Justification'))->rules('required');
             $form->hidden('status', __('Status'))->default('Pending');
             $form->hidden('hod_status', __('Status'))->default('Pending');

@@ -166,6 +166,15 @@
         </p>
 
 
+        {{-- applicant --}}
+        <table class="details-table" style="margin-bottom: 20px;">
+            <tr class="my-td">
+                <td style="width: 20%;">Name</td>
+                <td>{{ $item->applicant->name ?? 'N/A' }}</td>
+            </tr>
+        </table>
+
+
         <table class="details-table" style="margin-bottom: 20px;">
             <tr class="my-th">
                 <td>SOMISY VEHICLE</td>
@@ -226,253 +235,48 @@
                 <td>
                     <b>Driver signature</b>
                 </td>
-                <td></td>
+                <td>
+                    <br>
+                    <br>
+                </td>
                 <td><b>Date</b></td>
                 <td>
-                    {{ \Carbon\Carbon::now()->format('d-M-Y') }} 
+                    {{ \Carbon\Carbon::now()->format('d-M-Y') }}
                 </td>
             </tr>
         </table>
 
-
-        <div class="divider"></div>
-
-        <div class="section-title">Request Details</div>
-        <table class="details-table">
-            <tr>
-                <th>Request ID</th>
-                <td>{{ $item->id }}</td>
-                <th>Request Type</th>
-                <td>{{ $item->type }}</td>
+        {{-- JOURNEY --}}
+        <table class="details-table" style="margin-bottom: 20px;">
+            <tr class="my-th">
+                <td colspan="4"><b>JOURNEY</b></td>
             </tr>
-            <tr>
-                <th>Date Requested</th>
-                <td>{{ \Carbon\Carbon::parse($item->created_at)->format('d-M-Y H:i') }}</td>
-                <th>Status</th>
-                <td>
-                    @if (
-                        $item->hod_status === 'Rejected' ||
-                            $item->gm_status === 'Rejected' ||
-                            $item->security_exit_status === 'Rejected' ||
-                            $item->security_return_status === 'Rejected')
-                        <span class="text-danger">Rejected</span>
-                    @elseif($item->security_return_status === 'Approved')
-                        <span class="text-success">Completed</span>
-                    @elseif($item->security_exit_status === 'Approved')
-                        <span class="text-success">Exited</span>
-                    @elseif($item->gm_status === 'Approved')
-                        <span class="text-success">Approved (Pending Exit)</span>
-                    @elseif($item->hod_status === 'Approved')
-                        <span class="text-warning">Pending GM Approval</span>
-                    @else
-                        <span class="text-warning">Pending HOD Approval</span>
-                    @endif
-                </td>
+
+            <tr class="my-td">
+                <td><b>Date Valid From</b></td>
+                <td>{{ \Carbon\Carbon::parse($item->requested_departure_time)->format('d-M-Y H:i') ?? 'N/A' }}</td>
+                <td><b>Date Until</b></td>
+                <td>{{ \Carbon\Carbon::parse($item->requested_return_time)->format('d-M-Y H:i') ?? 'N/A' }}</td>
             </tr>
-            <tr>
-                <th>Applicant Name</th>
-                <td>{{ $item->applicant->name ?? 'N/A' }}</td>
-                <th>Applicant ID</th>
-                <td>{{ $item->applicant_id }}</td>
+            <tr class="my-td">
+                <td colspan="2"><b>Date Valid From</b></td>
+                <td colspan="2">{{ $item->destination ?? 'N/A' }}</td>
+            </tr>
+            <tr class="my-td">
+                <td colspan="2"><b>Justification</b></td>
+                <td colspan="2">{{ $item->justification ?? 'N/A' }}</td>
             </tr>
         </table>
 
-        <div class="section-title">Justification & Destination</div>
-        <table class="details-table">
-            <tr>
-                <th>Destination</th>
-                <td>{{ $item->destination ?? 'N/A' }}</td>
+        {{-- Passenger => materials_requested --}}
+        <table class="details-table" style="margin-bottom: 20px;">
+            <tr class="my-th">
+                <td colspan="4"><b>PASSENGERS</b></td>
             </tr>
-            <tr>
-                <th>Justification</th>
-                <td>{{ $item->justification ?? 'N/A' }}</td>
+            <tr class="my-td">
+                <td colspan="4">{{ $item->materials_requested ?? 'N/A' }}</td>
             </tr>
         </table>
-
-        {{-- Request Type Specific Details --}}
-        @if ($item->type == 'Vehicle')
-            <div class="section-title">Vehicle & Driver Details</div>
-            <table class="details-table">
-                <tr>
-                    <th>Registration No.</th>
-                    <td>{{ $item->vehicle->registration_number ?? 'N/A' }}</td>
-                </tr>
-                <tr>
-                    <th>Make/Model</th>
-                    <td>{{ $item->vehicle->brand ?? '' }} {{ $item->vehicle->model ?? 'N/A' }}</td>
-                </tr>
-                <tr>
-                    <th>Vehicle Type</th>
-                    <td>{{ $item->vehicle->vehicle_type ?? 'N/A' }}</td>
-                </tr>
-                <tr>
-                    <th>Is somisy vehicle?</th>
-                    <td>{{ $item->is_somisy_vehicle ?? 'N/A' }}</td>
-                </tr>
-                <tr>
-                    <th>Is Camp Resident?</th>
-                    <td>{{ $item->is_camp_resident ?? 'N/A' }}</td>
-                </tr>
-                <tr>
-                    <th>Expatriate</th>
-                    <td>{{ $item->expatirate_type ?? 'N/A' }}</td>
-                </tr>
-                <tr>
-                    <th>Licence type</th>
-                    <td>{{ $item->licence_type ?? 'N/A' }}</td>
-                </tr>
-                <tr>
-                    <th>Driver(s)</th>
-                    <td>
-                        @forelse($item->drivers as $driverEntry)
-                            {{ $driverEntry->driver->name ?? 'N/A' }} (ID: {{ $driverEntry->driver_id }})<br>
-                        @empty
-                            No driver assigned.
-                        @endforelse
-                    </td>
-                </tr>
-                <tr>
-                    <th>Passenger Info</th>
-                    <td>{{ $item->materials_requested ?? 'N/A' }}</td>
-                </tr>{{-- Reusing field for passenger info as per form --}}
-            </table>
-        @elseif($item->type == 'Materials')
-            <div class="section-title">Material Details</div>
-            <table class="details-table">
-                <thead>
-                    <tr>
-                        <th>Material Name/Type</th>
-                        <th>Quantity</th>
-                        <th>Unit</th>
-                        <th>Photo Provided</th> {{-- Dompdf might struggle with dynamic images here unless paths are absolute --}}
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($item->materialItems as $material)
-                        <tr>
-                            <td>{{ $material->type ?? ($material->name ?? 'N/A') }}</td> {{-- Adjusted field name based on form vs model --}}
-                            <td>{{ $material->quantity ?? 'N/A' }}</td>
-                            <td>{{ $material->unit ?? 'N/A' }}</td>
-                            <td>{{ $material->description ? 'Yes' : 'No' }}</td> {{-- Assuming description holds photo path --}}
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="4">No material details provided.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        @elseif($item->type == 'Personnel')
-            <div class="section-title">Personnel Leave Details</div>
-            <table class="details-table">
-                <tr>
-                    <th>Leave Type</th>
-                    <td>{{ $item->materials_requested ?? 'N/A' }}</td>
-                </tr> {{-- Reusing field for leave type as per form --}}
-                {{-- Add other relevant personnel details if available in the model --}}
-            </table>
-        @endif
-
-        <div class="section-title">Timing Details</div>
-        <table class="details-table">
-            <tr>
-                <th>Requested Departure</th>
-                <td>{{ $item->requested_departure_time ? \Carbon\Carbon::parse($item->requested_departure_time)->format('d-M-Y H:i') : 'N/A' }}
-                </td>
-                <th>Actual Departure</th>
-                <td>{{ $item->actual_departure_time ? \Carbon\Carbon::parse($item->actual_departure_time)->format('d-M-Y H:i') : 'N/A' }}
-                </td>
-            </tr>
-            <tr>
-                <th>Requested Return</th>
-                <td>{{ $item->requested_return_time ? \Carbon\Carbon::parse($item->requested_return_time)->format('d-M-Y H:i') : 'N/A' }}
-                </td>
-                <th>Actual Return</th>
-                <td>{{ $item->actual_return_time ? \Carbon\Carbon::parse($item->actual_return_time)->format('d-M-Y H:i') : 'N/A' }}
-                </td>
-            </tr>
-            @if ($item->type == 'Vehicle')
-                <tr>
-                    <th>Overstayed?</th>
-                    <td>{{ $item->over_stayed ?? 'N/A' }}</td>
-                    <th></th>
-                    <td></td> {{-- Placeholder for alignment --}}
-                </tr>
-            @endif
-        </table>
-
-        <div class="section-title approval-section">Approval & Verification Trail</div>
-        <table class="details-table">
-            <thead>
-                <tr>
-                    <th>Stage</th>
-                    <th>Status</th>
-                    <th>Processed By / On</th>
-                    <th>Remarks</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>HOD Approval</td>
-                    <td>{{ $item->hod_status ?? 'Pending' }}</td>
-                    <td>{{-- Add logic to display HOD user and timestamp if available --}}</td>
-                    <td>{{ $item->hod_comment ?? '' }}</td>
-                </tr>
-                @if ($item->hod_status == 'Approved')
-                    <tr>
-                        <td>GM Approval</td>
-                        <td>{{ $item->gm_status ?? 'Pending' }}</td>
-                        <td>{{-- Add logic to display GM user and timestamp if available --}}</td>
-                        <td>{{ $item->gm_comment ?? '' }}</td>
-                    </tr>
-                @endif
-                @if ($item->gm_status == 'Approved')
-                    <tr>
-                        <td>Security Exit</td>
-                        <td>{{ $item->security_exit_status ?? 'Pending' }}</td>
-                        <td>{{-- Add logic to display Security user and timestamp if available --}}</td>
-                        <td>{{ $item->exit_comment ?? '' }} (State: {{ $item->exit_state ?? 'N/A' }})</td>
-                    </tr>
-                @endif
-                @if ($item->security_exit_status == 'Approved')
-                    <tr>
-                        <td>Security Return</td>
-                        <td>{{ $item->security_return_status ?? 'Pending' }}</td>
-                        <td>{{-- Add logic to display Security user and timestamp if available --}}</td>
-                        <td>{{ $item->return_comment ?? '' }} (State: {{ $item->return_state ?? 'N/A' }})</td>
-                    </tr>
-                @endif
-            </tbody>
-        </table>
-
-
-        <div class="signature-section">
-            <div class="signature-block">
-                <div class="signature-line"></div>
-                Applicant Signature
-            </div>
-            <div class="signature-block">
-                <div class="signature-line"></div>
-                HOD Signature
-            </div>
-            <div class="signature-block">
-                <div class="signature-line"></div>
-                GM Signature
-            </div>
-            <div class="signature-block" style="margin-top: 20px;">
-                <div class="signature-line"></div>
-                Security (Exit) Signature
-            </div>
-            <div class="signature-block" style="margin-top: 20px;">
-                <div class="signature-line"></div>
-                Security (Return) Signature
-            </div>
-        </div>
-
-        <div class="footer">
-            <p>Printed on: {{ date('d-M-Y H:i:s') }}</p>
-            {{-- Add any footer text required --}}
-        </div>
     </div>
 </body>
 

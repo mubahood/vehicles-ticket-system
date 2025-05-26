@@ -174,7 +174,16 @@ Route::get('print-gatepass', function (Request $request) {
         die("Item not found.");
     }
     $pdf = App::make('dompdf.wrapper');
-    $pdf->loadHTML(view('print/print-gatepass', [
+
+    $file = 'print-materials';
+
+    if ($item->type == 'Vehicle') {
+        $file = 'print-gatepass';
+    } else {
+        $file = 'print-materials';
+    }
+
+    $pdf->loadHTML(view('print/' . $file, [
         'item' => $item
     ]));
     return $pdf->stream();
