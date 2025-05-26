@@ -19,6 +19,14 @@ class HomeController extends Controller
     public function index(Content $content)
     {
         $u = Auth::user();
+        if ($u == null) {
+            return $content;
+        }
+
+        $dept = Departmet::find($u->department_id);
+        if ($dept == null) {
+            return $content->withError('Department not found. Please contact the administrator.');
+        }
 
         $content
             ->title('Hello ' . $u->name . ", ")
@@ -38,6 +46,10 @@ class HomeController extends Controller
                 $conditions['applicant_id'] = $u->id;
             }
 
+            if ($u->isRole('hod')) {
+                $conditions['department_id'] = $u->department_id;
+            }
+
             // Pending
             $row->column(3, function (Column $column) use ($conditions) {
                 $count = VehicleRequest::where($conditions)
@@ -48,49 +60,47 @@ class HomeController extends Controller
                     'title' => 'Pending requests',
                     'sub_title' => 'Requests not attended to yet.',
                     'number' => number_format($count),
-                    'link' => 'all-requests'
+                    'link' => 'all-requests?gm_status=Pending'
                 ]));
             });
 
             // HOD Review
             $row->column(3, function (Column $column) use ($conditions) {
                 $count = VehicleRequest::where($conditions)
-                    ->where('hod_status', 'Pending')
+                    ->where('gm_status', 'Approved')
                     ->count();
                 $column->append(view('widgets.box-5', [
                     'is_dark' => false,
-                    'title' => 'HOD Review',
-                    'sub_title' => 'Requests that need HOD review.',
+                    'title' => 'Approved',
+                    'sub_title' => 'Requests Approved by HOD.',
                     'number' => number_format($count),
-                    'link' => 'all-requests'
+                    'link' => 'all-requests?gm_status=Approved'
                 ]));
             });
 
             // GM Review
             $row->column(3, function (Column $column) use ($conditions) {
                 $count = VehicleRequest::where($conditions)
-                    ->where('hod_status', 'Approved')
-                    ->where('gm_status', 'Pending')
+                    ->where('hod_status', 'Rejected')
+                    ->orWhere('gm_status', 'Rejected')
                     ->count();
                 $column->append(view('widgets.box-5', [
                     'is_dark' => false,
-                    'title' => 'GM Review',
-                    'sub_title' => 'Requests that need GM review.',
+                    'title' => 'Rejected Requests',
+                    'sub_title' => 'Requests Rejected.',
                     'number' => number_format($count),
-                    'link' => 'all-requests'
+                    'link' => 'all-requests?gm_status=Rejected'
                 ]));
             });
 
             // Approved
             $row->column(3, function (Column $column) use ($conditions) {
-                $count = VehicleRequest::where($conditions)
-                    ->where('hod_status', 'Approved')
-                    ->where('gm_status', 'Approved')
+                $count = VehicleRequest::where([])
                     ->count();
                 $column->append(view('widgets.box-5', [
                     'is_dark' => true,
-                    'title' => 'Approved',
-                    'sub_title' => 'Approved requests.',
+                    'title' => 'All Requests',
+                    'sub_title' => 'Requests Rejected.',
                     'number' => number_format($count),
                     'link' => 'all-requests'
                 ]));
@@ -106,35 +116,45 @@ class HomeController extends Controller
                     'personels' => [],
                     'records'   => [],
                 ];
-            
+
                 // last 12 months
                 for ($i = 11; $i >= 0; $i--) {
                     $monthDate = Carbon::now()->subMonths($i);
                     $start     = $monthDate->copy()->startOfMonth();
                     $end       = $monthDate->copy()->endOfMonth();
-            
+
+                    $conds = [
+                        'is_closed' => 'No',
+                    ];
+
+
+                    $u = Admin::user();
+                    if ($u->isRole('hod')) {
+                        $conds['department_id'] = $u->department_id;
+                    }
+
                     // counts by type
                     $vehiclesCount  = VehicleRequest::whereBetween('created_at', [$start, $end])
                         ->where('type', 'Vehicle')
-                        ->where('is_closed', 'No')
+                        ->where($conds)
                         ->count();
-            
+
                     $materialsCount = VehicleRequest::whereBetween('created_at', [$start, $end])
                         ->where('type', 'Materials')
-                        ->where('is_closed', 'No')
+                        ->where($conds)
                         ->count();
-            
+
                     $personelsCount = VehicleRequest::whereBetween('created_at', [$start, $end])
                         ->where('type', 'Personnel')
-                        ->where('is_closed', 'No')
+                        ->where($conds)
                         ->count();
-            
+
                     // push into arrays
                     $data['labels'][]    = $monthDate->format('M Y');      // e.g. "Jun 2024"
                     $data['vehicles'][]  = $vehiclesCount;
                     $data['materials'][] = $materialsCount;
                     $data['personels'][] = $personelsCount;
-            
+
                     // optional: roll-up record for tables
                     $data['records'][] = [
                         'month'    => $monthDate->format('F Y'),
@@ -142,15 +162,15 @@ class HomeController extends Controller
                         'progress' => 0,
                     ];
                 }
-            
+
                 $column->append(view('admin.charts.requests-frequency', $data));
             });
-       
-            
+
+
             $row->column(6, function (Column $column) {
                 $labels = [];
                 $values = [];
-            
+
                 // Gather counts per department
                 foreach (Departmet::all() as $department) {
                     $labels[] = $department->name;
@@ -158,13 +178,12 @@ class HomeController extends Controller
                         ->where('is_closed', 'No')
                         ->count();
                 }
-            
+
                 $column->append(view('admin.charts.vehicles-availability', [
                     'labels' => $labels,
                     'values' => $values,
                 ]));
             });
-            
         });
         return $content;
     }

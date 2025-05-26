@@ -3,20 +3,21 @@ use App\Models\Utils;
 
 ?>
 <!-- Main Header -->
-<header class="main-header">
+<header class="main-header" style="background-color: #222D33!important;">
 
     <!-- Logo -->
-    <a href="{{ admin_url('/') }}" class="logo">
+    <a href="{{ admin_url('/') }}" class="logo"  style="background-color: #17406D!important;">
         <!-- mini logo for sidebar mini 50x50 pixels -->
         {{-- <span class="logo-mini">{!! env('SHORT_NAME') !!}</span> --}}
         <img class="logo-mini" src="{{ url('public/assets/images/logo.jpg') }}" alt="Logo">
-        <center><img class="logo-lg img img-fluid" style="height: 50px;" src="{{ url('public/assets/images/logo.jpg') }}" alt="Logo"></center>
+        <img class="logo-lg img img-fluid" style="height: 50px;" src="{{ url('public/assets/images/logo.jpg') }}"
+            alt="Logo">
         <!-- logo for regular state and mobile devices -->
-    {{--     <span class="logo-lg">{!! env('SHORT_NAME') !!}</span> --}}
+        {{--     <span class="logo-lg">{!! env('SHORT_NAME') !!}</span> --}}
     </a>
 
     <!-- Header Navbar -->
-    <nav class="navbar navbar-static-top d-block p-0" role="navigation">
+    <nav class="navbar navbar-static-top d-block p-0" role="navigation" style="background-color: #17406D!important;">
         <!-- Sidebar toggle button-->
         <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
             <span class="sr-only">Toggle navigation</span>

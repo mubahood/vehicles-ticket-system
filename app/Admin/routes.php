@@ -20,6 +20,7 @@ Route::group([
     $router->resource('leave-requests', VehicleRequestController::class);
     $router->resource('all-requests', VehicleRequestController::class);
     $router->resource('archived-requests', VehicleRequestController::class);
-    $router->resource('companies', CompanyController::class); 
+    $router->resource('companies', CompanyController::class);
     $router->resource('exit-records', ExitRecordController::class);
+    $router->resource('import-user-datas', ImportUserDataController::class);
 });

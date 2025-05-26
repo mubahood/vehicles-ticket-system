@@ -30,7 +30,7 @@ php artisan make:migration add_department_id_to_vehicle_requests --table=vehicle
 
 Encore\Admin\Auth\Database\Administrator::class,
 php artisan admin:make FormSr4Controller --model=App\FormSr4
-php artisan admin:make ParticipantController --model=App\\Participant
+php artisan admin:make ImportUserDataController --model=App\\Models\\ImportUserData
 
 php artisan admin:make ExitRecordController --model=App\Models\ExitRecord
  

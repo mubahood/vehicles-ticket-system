@@ -19,7 +19,7 @@ if (!isset($body)) {
     <style>
         /* create css var primary color as rgb(230, 207, 0) */
         :root {
-            --primary-color: rgb(230, 207, 0);
+            --primary-color: rgb(0, 0, 230);
         }
 
         body {
@@ -33,7 +33,7 @@ if (!isset($body)) {
         }
 
         .header {
-            background-color: #e89f02;
+            background-color: #020ee8;
             color: #fff;
             text-align: center;
             padding: 10px;
@@ -83,9 +83,7 @@ if (!isset($body)) {
             <h2 style="color: rgb(0, 0, 50);" class="my-title">{{ env('APP_NAME') }}</h2>
         </div>
         <div class="my-hr" style="border: 3px solid  black"></div>
-        <div class="my-hr "style="border: 3px solid yellow"></div>
-        <div class="my-hr " style="border: 3px solid  red"></div>
-        <!-- Content -->
+
         <div class="content"
             style="
         font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
@@ -93,16 +91,16 @@ if (!isset($body)) {
         ">
             {!! $body !!}
         </div>
-        <a href="http://unified.m-omulimisa.com/">
+        <a href="javascript:void(0)">
             <div class="header small">
                 <div class="d-flex justify-content-center" style="font-size: 12px">
-                    <a href="https://tat.go.ug/about-us/"
-                        class=" mx-2 text-primary-2 text-uppercase">{{ strtoupper('About TAT') }}</a> &nbsp;•&nbsp;
-                    <a href="https://tat.go.ug/legislation/"
+                    <a href="javascript:void(0)"
+                        class=" mx-2 text-primary-2 text-uppercase">{{ strtoupper('About Us') }}</a> &nbsp;•&nbsp;
+                    <a href="javascript:void(0)"
                         class=" mx-2 text-primary-2 text-uppercase">{{ strtoupper('Resourses') }}</a> &nbsp;•&nbsp;
-                    <a href="https://tat.go.ug/upcoming-events/"
+                    <a href="javascript:void(0)"
                         class=" mx-2 text-primary-2 text-uppercase">{{ strtoupper('News') }}</a> &nbsp;•&nbsp;
-                    <a href="https://tat.go.ug/contact-us/"
+                    <a href="javascript:void(0)"
                         class=" mx-2 text-primary-2 text-uppercase">{{ strtoupper('Contact Us') }}
                 </div>
             </div>

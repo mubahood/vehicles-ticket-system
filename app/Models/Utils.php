@@ -15,6 +15,34 @@ class Utils extends Model
     use HasFactory;
 
 
+    public static function get_test_mails()
+    {
+        return [
+            'gm@mail.com',
+            'gm@test.com',
+            'employee@gmail.com',
+            'admin@gmail.com',
+        ];
+    }
+
+    public static function get_general_managers()
+    {
+        $gm_roles = 'SELECT user_id FROM admin_role_users WHERE role_id = (SELECT id FROM admin_roles WHERE slug = "gm")';
+        $gm_user_ids = \DB::select($gm_roles);
+
+        $gm_user_ids = array_map(function ($item) {
+            return $item->user_id;
+        }, $gm_user_ids);
+        $gm_user = User::whereIn('id', $gm_user_ids)
+            ->orderBy('id', 'desc')
+            ->get()
+            ->first();
+
+        if ($gm_user == null) {
+            return null;
+        }
+        return $gm_user;
+    }
     public static function get_dropdown($model, $name)
     {
         $data = $model::where([])->get();
@@ -25,11 +53,11 @@ class Utils extends Model
             if (is_array($name)) {
                 $n = '';
                 foreach ($name as $k => $v) {
-                    $n .= $value->$v ;
+                    $n .= $value->$v;
                     //if not last, add ' - '
                     if ($k < count($name) - 1) {
                         $n .= ' - ';
-                    } 
+                    }
                 }
                 $arr[$value->id] = $n;
             } else {
@@ -692,10 +720,7 @@ class Utils extends Model
     }
 
     //send_schedule_email
-    public static function send_schedule_email()
-    {
-       
-    }
+    public static function send_schedule_email() {}
 
     /**
      * Sends email notifications to URAs for applications that have reached the
@@ -703,28 +728,14 @@ class Utils extends Model
      *
      * @return void
      */
-    public static function notify_registrar_how_ura_has_submitted_defence()
-    {
-        
-    }
-    public static function notify_ura_to_submit_defence()
-    { 
-    }
+    public static function notify_registrar_how_ura_has_submitted_defence() {}
+    public static function notify_ura_to_submit_defence() {}
 
-    public static function get_emails_for_role($role_slug)
-    {
-         
-    }
+    public static function get_emails_for_role($role_slug) {}
 
-    public static function get_tat_members()
-    {
+    public static function get_tat_members() {}
 
-    }
-
-    public static function send_mails_for_pending_applications()
-    {
-     
-    }
+    public static function send_mails_for_pending_applications() {}
 
     public static function start_session()
     {

@@ -55,6 +55,48 @@ class VehicleRequestController extends AdminController
 
         $u = Admin::user();
         //is_closed archived-requests
+        $grid->filter(function ($filter) use ($u, $segs) {
+            $filter->disableIdFilter();
+
+            $filter->equal('applicant_id', __('Applicant'))
+                ->select(Utils::get_dropdown(\App\Models\User::class, ['name', 'id']));
+            $filter->equal('vehicle_id', __('Vehicle'))
+                ->select(Utils::get_dropdown(\App\Models\Vehicle::class, ['registration_number', 'id', 'brand', 'model', 'vehicle_type']));
+            $filter->equal('department_id', __('Department'))
+                ->select(Utils::get_dropdown(\App\Models\Departmet::class, ['name', 'id']));
+            $filter->between('created_at', __('Date'))->datetime();
+            $filter->equal('type', __('Type'))->select([
+                'Vehicle' => 'Vehicle',
+                'Materials' => 'Materials',
+                'Personnel' => 'Personnel',
+            ]);
+            $filter->equal('hod_status', __('HOD Status'))->select([
+                'Pending' => 'Pending',
+                'Approved' => 'Approved',
+                'Rejected' => 'Rejected',
+            ]);
+            $filter->equal('gm_status', __('GM Status'))->select([
+                'Pending' => 'Pending',
+                'Approved' => 'Approved',
+                'Rejected' => 'Rejected',
+            ]);
+            $filter->equal('security_exit_status', __('Security Exit Status'))->select([
+                'Pending' => 'Pending',
+                'Approved' => 'Approved',
+                'Rejected' => 'Rejected',
+            ]);
+            $filter->equal('security_return_status', __('Security Return Status'))->select([
+                'Pending' => 'Pending',
+                'Approved' => 'Approved',
+                'Rejected' => 'Rejected',
+            ]);
+            $filter->like('destination', __('Destination'));
+            $filter->like('justification', __('Justification'));
+            $filter->equal('is_closed', __('Is Closed'))->select([
+                'Yes' => 'Yes',
+                'No' => 'No',
+            ]);
+        });
 
 
         if ($u->isRole('hod')) {
@@ -206,16 +248,7 @@ class VehicleRequestController extends AdminController
                 'Approved' => 'success',
                 'Rejected' => 'danger',
             ])->sortable();
-        $grid->column('security_exit_status', __('Exit Status'))
-            ->display(function ($value) {
-                return $value;
-            })
-            ->label([
-                'Pending' => 'warning',
-                'Approved' => 'success',
-                'Rejected' => 'danger',
-            ])
-            ->sortable();
+
 
         $grid->column('exit_state', __('Exit state'))
             ->display(function ($value) {
@@ -272,25 +305,30 @@ class VehicleRequestController extends AdminController
             $url = url('print-gatepass') . '?gatepass_id=' . $this->id;
             return '<a href="' . $url . '" target="_blank" class="btn btn-xs btn-primary">Print</a>';
         })->width(100);
-        $grid->column('exit_record_view', __('Exit Records (View)'))->display(function () {
-            //if gm not appoved, return N/A
-            if ($this->gm_status != 'Approved') {
-                return 'N/A';
-            }
-            $recs_count = $this->exitRecords()->count();
-            $url_view_record = admin_url('exit-records?vehicle_request_id=' . $this->id);
-            return '<a href="' . $url_view_record . '" class="btn btn-xs btn-primary">View Exit Records (' . $recs_count . ')</a>';
-        });
-        $grid->column('exit_record', __('Exit Records (Add)'))->display(function () {
-            //if gm not appoved, return N/A
-            if ($this->gm_status != 'Approved') {
-                return 'N/A';
-            }
-            $url_add_record = admin_url('exit-records/create?vehicle_request_id=' . $this->id);
-            return '<a href="' . $url_add_record . '" class="btn btn-xs btn-primary">Add Exit Record</a>';
-        });
 
+        if ($u->isRole('security') || $u->isRole('gm') || $u->isRole('admin')) {
 
+            $grid->column('exit_record_view', __('Exit Records (View)'))->display(function () {
+                //if gm not appoved, return N/A
+                if ($this->gm_status != 'Approved') {
+                    return 'N/A';
+                }
+                $recs_count = $this->exitRecords()->count();
+                $url_view_record = admin_url('exit-records?vehicle_request_id=' . $this->id);
+                return '<a href="' . $url_view_record . '" class="btn btn-xs btn-primary">View Exit Records (' . $recs_count . ')</a>';
+            });
+        }
+
+        if ($u->isRole('security')) {
+            $grid->column('exit_record', __('Exit Records (Add)'))->display(function () {
+                //if gm not appoved, return N/A
+                if ($this->gm_status != 'Approved') {
+                    return 'N/A';
+                }
+                $url_add_record = admin_url('exit-records/create?vehicle_request_id=' . $this->id);
+                return '<a href="' . $url_add_record . '" class="btn btn-xs btn-primary">Add Exit Record</a>';
+            });
+        }
         return $grid;
     }
 
@@ -311,43 +349,22 @@ class VehicleRequestController extends AdminController
         $vehicleRequest = VehicleRequest::findOrFail($id);
         $show = new Show($vehicleRequest);
 
-        // Basic Information
-        $show->field('id', __('ID'))->display(function ($id) {
-            return $id;
-        });
-        $show->field('created_at', __('Created At'))->display(function ($created_at) {
-            return date('d-m-Y', strtotime($created_at));
-        });
-        $show->field('updated_at', __('Updated At'))->display(function ($updated_at) {
-            return date('d-m-Y', strtotime($updated_at));
-        });
+        $show->field('created_at', __('Created'))
+            ->as(function ($created_at) {
+                return Utils::my_date($created_at);
+            });
 
         // Applicant and Vehicle Information
-        $show->field('applicant_id', __('Applicant'))->display(function ($applicant_id) {
+        $show->field('applicant_id', __('Applicant'))->as(function ($applicant_id) {
             return $this->applicant ? $this->applicant->name : 'N/A';
         });
-        $show->field('vehicle_id', __('Vehicle'))->display(function ($vehicle_id) {
+        $show->field('vehicle_id', __('Vehicle'))->as(function ($vehicle_id) {
             if ($this->vehicle) {
                 return $this->vehicle->registration_number . ' - ' . $this->vehicle->brand
                     . ' - ' . $this->vehicle->model . ' - ' . $this->vehicle->vehicle_type;
             }
             return 'N/A';
         });
-
-        // Time Information
-        /*  $show->field('requested_departure_time', __('Requested Departure Time'))->display(function ($time) {
-            return date('d-m-Y H:i:s', strtotime($time));
-        });
-        $show->field('requested_return_time', __('Requested Return Time'))->display(function ($time) {
-            return date('d-m-Y H:i:s', strtotime($time));
-        }); */
-        $show->field('actual_departure_time', __('Actual Departure Time'))->display(function ($time) {
-            return $time ? date('d-m-Y H:i:s', strtotime($time)) : 'N/A';
-        });
-        $show->field('actual_return_time', __('Actual Return Time'))->display(function ($time) {
-            return $time ? date('d-m-Y H:i:s', strtotime($time)) : 'N/A';
-        });
-
         // Request Details
         $show->field('destination', __('Destination'))->display(function ($destination) {
             return $destination ?: 'N/A';
@@ -366,30 +383,7 @@ class VehicleRequestController extends AdminController
         $show->field('gm_status', __('GM Status'))->display(function ($status) {
             return $status ?: 'N/A';
         });
-        $show->field('security_exit_status', __('
-        '))->display(function ($status) {
-            return $status ?: 'N/A';
-        });
-        $show->field('security_return_status', __('Security Return Status'))->display(function ($status) {
-            return $status ?: 'N/A';
-        });
 
-        // Additional Details
-        $show->field('return_state', __('Return State'))->display(function ($state) {
-            return $state ?: 'N/A';
-        });
-        $show->field('over_stayed', __('Over Stayed'))->display(function ($value) {
-            return $value ?: 'N/A';
-        });
-        $show->field('exit_state', __('Exit State'))->display(function ($state) {
-            return $state ?: 'N/A';
-        });
-        $show->field('exit_comment', __('Exit Comment'))->display(function ($comment) {
-            return $comment ?: 'N/A';
-        });
-        $show->field('return_comment', __('Return Comment'))->display(function ($comment) {
-            return $comment ?: 'N/A';
-        });
         $show->field('hod_comment', __('HOD Comment'))->display(function ($comment) {
             return $comment ?: 'N/A';
         });
@@ -397,6 +391,39 @@ class VehicleRequestController extends AdminController
             return $comment ?: 'N/A';
         });
 
+        //exitRecords table
+        $show->field('exitRecords', __('Exit Records'))->as(function ($exitRecords) {
+            if ($exitRecords->isEmpty()) {
+                return 'No exit records found';
+            }
+            $html = '<table class="table table-bordered"><thead><tr>
+                <th>ID</th>
+                <th>Employee</th>
+                <th>Status</th>
+                <th>Exit Time</th>
+                <th>Return Time</th>
+                <th>Remarks</th>
+            </tr></thead><tbody>';
+            foreach ($exitRecords as $rec) {
+                $employee = $rec->employee ? $rec->employee->name : 'N/A';
+                $status = $rec->status == 'exit'
+                    ? '<span class="label label-danger">Exit</span>'
+                    : '<span class="label label-success">Returned</span>';
+                $exit_time = $rec->exit_time ? date('d-m-Y H:i:s', strtotime($rec->exit_time)) : 'N/A';
+                $return_time = $rec->return_time ? date('d-m-Y H:i:s', strtotime($rec->return_time)) : 'N/A';
+                $remarks = $rec->remarks ?: '';
+                $html .= "<tr>
+                    <td>{$rec->id}</td>
+                    <td>{$employee}</td>
+                    <td>{$status}</td>
+                    <td>{$exit_time}</td>
+                    <td>{$return_time}</td>
+                    <td>{$remarks}</td>
+                </tr>";
+            }
+            $html .= '</tbody></table>';
+            return $html;
+        })->unescape();
 
 
         return $show;
@@ -440,7 +467,7 @@ class VehicleRequestController extends AdminController
                 });
 
                 $form->divider();
-                $form->textarea('materials_requested', 'Passenger information (name, contact) seperated by comma.')->rules('required');
+                $form->textarea('materials_requested', 'Passenger information (name, contact) seperated by comma.');
             }
             if (in_array('materials-requests', $segs)) {
                 $name_of_range  = "Requested time and Return time";
@@ -514,32 +541,6 @@ class VehicleRequestController extends AdminController
                 $form->text('gm_comment', 'GM Remarks');
                 $departments = \App\Models\Departmet::all()->pluck('name', 'id');
                 $form->select('department_id', 'Department')->options($departments)->rules('required');
-            }
-            if ($u->isRole('security') && $record->gm_status == 'Approved') {
-               /*  $form->radio('security_exit_status', 'Security Exit Status')->options([
-                    'Pending' => 'Pending',
-                    'Approved' => 'Approved',
-                    'Rejected' => 'Rejected'
-                ])->rules('required')
-                    ->when('Approved', function (Form $form) {
-                        $form->datetime('actual_departure_time', 'Actual departure time')->rules('required');
-                        $form->radio('exit_state', 'Exit State')->options(['Good' => 'Good', 'Fair' => 'Fair', 'Bad' => 'Bad'])->rules('required');
-                    }); */
-            }
-
-            if ($u->isRole('security') && $record->security_exit_status == 'Approved') {
-                $form->radio('security_return_status', 'Security Return Status')->options([
-                    'Pending' => 'Pending',
-                    'Approved' => 'Approved',
-                    'Rejected' => 'Rejected'
-                ])->rules('required')
-                    ->when('Approved', function (Form $form) {
-                        $form->datetime('actual_return_time', 'Actual return time')->rules('required');
-                        $form->radio('return_state', 'Return State')->options(['Good' => 'Good', 'Fair' => 'Fair', 'Bad' => 'Bad'])->rules('required');
-                        $form->radio('over_stayed', 'Over Stayed')->options(['Yes' => 'Yes', 'No' => 'No'])->rules('required');
-                        $form->text('return_comment', 'Return Remarks');
-                    });
-                $form->radio('is_closed', 'Archive/Close This Request')->options(['Yes' => 'Yes', 'No' => 'No'])->rules('required');
             }
         }
 

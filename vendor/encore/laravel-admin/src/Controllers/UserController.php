@@ -29,22 +29,43 @@ class UserController extends AdminController
         $userModel = config('admin.database.users_model');
 
         $grid = new Grid(new $userModel());
+
+            //add filter options
+        $grid->filter(function ($filter) {
+
+            $filter->disableIdFilter();
+            //by department
+            $departments = Departmet::all()->pluck('name', 'id');
+            $filter->equal('department_id', 'Department')
+                ->select($departments);
+
+            //by company
+            $companies = Company::all()->pluck('name', 'id'); 
+
+            $filter->equal('company_id', 'Company')
+                ->select($companies);
+
+            
+        }); 
+  
         $grid->quickSearch('name', 'username', 'phone_number')->placeholder('Search by name, username, phone number');
 
         $grid->disableBatchActions();
-        $grid->column('id', 'ID')->hide();
+        $grid->column('id', 'ID')->sortable();
         $grid->column('avatar', __('Photo'))
             ->width(80)
-            ->lightbox(['width' => 60, 'height' => 60]);
+            ->lightbox(['width' => 60, 'height' => 60])
+            ->hide();
 
-        $grid->column('username', trans('admin.username'));
+        $grid->column('email', 'email address')->sortable();
+        $grid->model()->orderBy('id', 'desc');
         $grid->column('phone_number', 'Phone number');
         $grid->column('name', trans('admin.name'))->sortable();
         $grid->column('sex', 'Gender');
 
         //department_id
         $grid->column('company_id', 'Company ')
-            ->display(function ($department_id) { 
+            ->display(function ($department_id) {
                 if ($this->company) {
                     return $this->company->name;
                 } else {
@@ -61,12 +82,11 @@ class UserController extends AdminController
                 }
             });
 
-
-        $grid->column('dob', 'Date of birth')->sortable();
         $grid->column('address', 'Address');
         $grid->column('roles', trans('admin.roles'))
             ->pluck('name')->label();
-        $grid->column('created_at', 'Registered')->sortable();
+        $grid->column('created_at', 'Registered')->sortable()
+            ->hide(); 
 
         $grid->actions(function (Grid\Displayers\Actions $actions) {
             if ($actions->getKey() == 1) {
@@ -80,6 +100,14 @@ class UserController extends AdminController
             });
         });
 
+        //action send message 
+        $grid->column('send_message', 'Send Password Reset Mail')
+            ->display(function () {
+                $url = url('send-new-password?user_id=' . $this->id);
+                return '<a href="' . $url . '" class="btn btn-xs btn-primary" target="_blank">Send Password Reset Mail</a>';
+            });
+
+    
 
         return $grid;
     }
@@ -145,7 +173,7 @@ class UserController extends AdminController
         $form->date('dob', 'Date of birth');
         $form->text('address', 'Address');
 
-        $form->text('phone_number', 'Phone number')->rules('required');
+        $form->text('phone_number', 'Phone number');
         $form->image('avatar', 'Photo');
         $form->password('password', trans('admin.password'))->rules('required|confirmed');
         $form->password('password_confirmation', trans('admin.password_confirmation'))->rules('required')
