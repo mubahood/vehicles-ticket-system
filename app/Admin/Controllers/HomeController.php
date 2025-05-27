@@ -80,9 +80,9 @@ class HomeController extends Controller
 
             // GM Review
             $row->column(3, function (Column $column) use ($conditions) {
+
                 $count = VehicleRequest::where($conditions)
                     ->where('hod_status', 'Rejected')
-                    ->orWhere('gm_status', 'Rejected')
                     ->count();
                 $column->append(view('widgets.box-5', [
                     'is_dark' => false,
@@ -95,7 +95,7 @@ class HomeController extends Controller
 
             // Approved
             $row->column(3, function (Column $column) use ($conditions) {
-                $count = VehicleRequest::where([])
+                $count = VehicleRequest::where($conditions)
                     ->count();
                 $column->append(view('widgets.box-5', [
                     'is_dark' => true,

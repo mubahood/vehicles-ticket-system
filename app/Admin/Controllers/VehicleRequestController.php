@@ -208,14 +208,7 @@ class VehicleRequestController extends AdminController
                 }
             })->sortable();
 
-        /*        $grid->column('requested_departure_time', __('Requested Departure Time'))
-            ->display(function ($requested_departure_time) {
-                return date('d-m-Y H:i:s', strtotime($requested_departure_time));
-            })->sortable();
-        $grid->column('requested_return_time', __('Requested Return Time'))
-            ->display(function ($requested_return_time) {
-                return date('d-m-Y H:i:s', strtotime($requested_return_time));
-            })->sortable(); */
+
         $grid->column('actual_return_time', __('Actual Return Time'))
             ->display(function ($actual_return_time) {
                 return date('d-m-Y H:i:s', strtotime($actual_return_time));
@@ -466,6 +459,11 @@ class VehicleRequestController extends AdminController
                 $form->radio('licence_type', 'Licence type')->options(['Mali' => 'Mali', 'International' => 'International', 'No licence' => 'No licence'])->rules('required');
 
 
+                $form->divider();
+                $form->datetime('requested_departure_time', __('Requested Departure Time'))->rules('required');
+                $form->datetime('requested_return_time', __('Requested Return Time'))->rules('required');
+                $form->text('destination', __('Destination'))->rules('required');
+
 
                 //has many drivers 
                 $form->hasMany('drivers', 'Click on "NEW" to add Driver', function (Form\NestedForm $form) use ($users) {
@@ -509,6 +507,9 @@ class VehicleRequestController extends AdminController
             //if type is vehicle
             if ($record->type == 'Vehicle') {
                 $form->display('vehicle_name', __('Vehicle'))->default($record->vehicle->registration_number . ' - ' . $record->vehicle->brand . ' - ' . $record->vehicle->model . ' - ' . $record->vehicle->vehicle_type);
+
+                $form->display('requested_departure_time', __('Requested Departure Time'));
+                $form->display('requested_return_time', __('Requested Return Time'));
             } else if ($record->type == 'Materials') {
                 /* $marerials = "";
                 foreach ($record->materialItems as $item) {

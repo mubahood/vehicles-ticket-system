@@ -46,7 +46,6 @@ class Utils extends Model
     public static function get_dropdown($model, $name)
     {
         $data = $model::where([
-            'status' => 'Active',
         ])->get();
         $arr = [];
 
