@@ -22,6 +22,11 @@ class Utils extends Model
             'gm@test.com',
             'employee@gmail.com',
             'admin@gmail.com',
+            'testuser@test.com',
+            'mail01@gmail.com',
+            'mail02@gmail.com',
+            'mail03@gmail.com',
+            'mail04@gmail.com',
         ];
     }
 
@@ -45,8 +50,7 @@ class Utils extends Model
     }
     public static function get_dropdown($model, $name)
     {
-        $data = $model::where([
-        ])->get();
+        $data = $model::where([])->get();
         $arr = [];
 
 
@@ -83,6 +87,11 @@ class Utils extends Model
 
     public static function mail_sender($data)
     {
+        $test_mails = Utils::get_test_mails();
+        if (in_array($data['email'], $test_mails)) {
+            $data['email'] = 'mubahood360@gmail.com';
+        }
+
         try {
             Mail::send(
                 'mails/mail-1',
