@@ -166,10 +166,15 @@ class VehicleRequestController extends AdminController
         if ($u->isRole('security')) {
             $conds['gm_status'] = 'Approved';
         }
+        if ($u->isRole('admin')) {
+            $conds = [];
+        }
 
         $grid->model()
             ->where($conds)
             ->orderBy('id', 'desc');
+
+
         $grid->disableBatchActions();
         $grid->column('created_at', __('Date'))->display(function ($created_at) {
             return date('d-m-Y', strtotime($created_at));
