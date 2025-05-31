@@ -25,15 +25,12 @@ class CompanyController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new Company());
+        $grid->disableFilter();
+        $grid->quickSearch('name', 'description')->placeholder('Search by name or description');
 
         $grid->disableBatchActions();
         $grid->column('id', __('Id'))->hide();
-        $grid->column('logo', __('Logo'))
-            ->image(
-                null,
-                100,
-                100
-            );
+
         $grid->column('name', __('Name'))->sortable();
         $grid->column('description', __('Description'));
 
@@ -71,7 +68,6 @@ class CompanyController extends AdminController
 
         $form->text('name', __('Name'))->rules('required');
         $form->text('description', __('Description'));
-        $form->image('logo', __('Logo'))->uniqueName()->rules('required');
 
         return $form;
     }

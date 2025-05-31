@@ -111,84 +111,88 @@ class HomeController extends Controller
             });
         });
 
-        $content->row(function (Row $row) {
-            $row->column(6, function (Column $column) {
-                $data = [
-                    'labels'    => [],
-                    'vehicles'  => [],
-                    'materials' => [],
-                    'personels' => [],
-                    'records'   => [],
-                ];
+        //only admin, hod and gm should see this
 
-                // last 12 months
-                for ($i = 11; $i >= 0; $i--) {
-                    $monthDate = Carbon::now()->subMonths($i);
-                    $start     = $monthDate->copy()->startOfMonth();
-                    $end       = $monthDate->copy()->endOfMonth();
-
-                    $conds = [
-                        'is_closed' => 'No',
+        if ($u->isRole('admin') || $u->isRole('hod') || $u->isRole('gm')) {
+            $content->row(function (Row $row) {
+                $row->column(6, function (Column $column) {
+                    $data = [
+                        'labels'    => [],
+                        'vehicles'  => [],
+                        'materials' => [],
+                        'personels' => [],
+                        'records'   => [],
                     ];
 
+                    // last 12 months
+                    for ($i = 11; $i >= 0; $i--) {
+                        $monthDate = Carbon::now()->subMonths($i);
+                        $start     = $monthDate->copy()->startOfMonth();
+                        $end       = $monthDate->copy()->endOfMonth();
 
-                    $u = Admin::user();
-                    if ($u->isRole('hod')) {
-                        $conds['department_id'] = $u->department_id;
+                        $conds = [
+                            'is_closed' => 'No',
+                        ];
+
+
+                        $u = Admin::user();
+                        if ($u->isRole('hod')) {
+                            $conds['department_id'] = $u->department_id;
+                        }
+
+                        // counts by type
+                        $vehiclesCount  = VehicleRequest::whereBetween('created_at', [$start, $end])
+                            ->where('type', 'Vehicle')
+                            ->where($conds)
+                            ->count();
+
+                        $materialsCount = VehicleRequest::whereBetween('created_at', [$start, $end])
+                            ->where('type', 'Materials')
+                            ->where($conds)
+                            ->count();
+
+                        $personelsCount = VehicleRequest::whereBetween('created_at', [$start, $end])
+                            ->where('type', 'Personnel')
+                            ->where($conds)
+                            ->count();
+
+                        // push into arrays
+                        $data['labels'][]    = $monthDate->format('M Y');      // e.g. "Jun 2024"
+                        $data['vehicles'][]  = $vehiclesCount;
+                        $data['materials'][] = $materialsCount;
+                        $data['personels'][] = $personelsCount;
+
+                        // optional: roll-up record for tables
+                        $data['records'][] = [
+                            'month'    => $monthDate->format('F Y'),
+                            'requests' => $vehiclesCount + $materialsCount + $personelsCount,
+                            'progress' => 0,
+                        ];
                     }
 
-                    // counts by type
-                    $vehiclesCount  = VehicleRequest::whereBetween('created_at', [$start, $end])
-                        ->where('type', 'Vehicle')
-                        ->where($conds)
-                        ->count();
+                    $column->append(view('admin.charts.requests-frequency', $data));
+                });
 
-                    $materialsCount = VehicleRequest::whereBetween('created_at', [$start, $end])
-                        ->where('type', 'Materials')
-                        ->where($conds)
-                        ->count();
 
-                    $personelsCount = VehicleRequest::whereBetween('created_at', [$start, $end])
-                        ->where('type', 'Personnel')
-                        ->where($conds)
-                        ->count();
+                $row->column(6, function (Column $column) {
+                    $labels = [];
+                    $values = [];
 
-                    // push into arrays
-                    $data['labels'][]    = $monthDate->format('M Y');      // e.g. "Jun 2024"
-                    $data['vehicles'][]  = $vehiclesCount;
-                    $data['materials'][] = $materialsCount;
-                    $data['personels'][] = $personelsCount;
+                    // Gather counts per department
+                    foreach (Departmet::all() as $department) {
+                        $labels[] = $department->name;
+                        $values[] = VehicleRequest::where('department_id', $department->id)
+                            ->where('is_closed', 'No')
+                            ->count();
+                    }
 
-                    // optional: roll-up record for tables
-                    $data['records'][] = [
-                        'month'    => $monthDate->format('F Y'),
-                        'requests' => $vehiclesCount + $materialsCount + $personelsCount,
-                        'progress' => 0,
-                    ];
-                }
-
-                $column->append(view('admin.charts.requests-frequency', $data));
+                    $column->append(view('admin.charts.vehicles-availability', [
+                        'labels' => $labels,
+                        'values' => $values,
+                    ]));
+                });
             });
-
-
-            $row->column(6, function (Column $column) {
-                $labels = [];
-                $values = [];
-
-                // Gather counts per department
-                foreach (Departmet::all() as $department) {
-                    $labels[] = $department->name;
-                    $values[] = VehicleRequest::where('department_id', $department->id)
-                        ->where('is_closed', 'No')
-                        ->count();
-                }
-
-                $column->append(view('admin.charts.vehicles-availability', [
-                    'labels' => $labels,
-                    'values' => $values,
-                ]));
-            });
-        });
+        }
         return $content;
     }
 }

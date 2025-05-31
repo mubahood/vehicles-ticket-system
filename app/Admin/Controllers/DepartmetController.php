@@ -27,6 +27,10 @@ class DepartmetController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new Departmet());
+
+        $grid->disableFilter();
+        $grid->quickSearch('name', 'description')->placeholder('Search by name or description');
+
         $grid->model()->orderBy('id', 'desc');
         $grid->disableBatchActions();
         $grid->column('name', __('Name'))->sortable();
@@ -73,6 +77,7 @@ class DepartmetController extends AdminController
     protected function form()
     {
         $form = new Form(new Departmet());
+
 
         $form->text('name', __('Name'))->rules('required');
         $form->text('code', __('Code'));

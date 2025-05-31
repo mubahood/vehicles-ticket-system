@@ -46,7 +46,7 @@ class UserController extends AdminController
                 ->select($companies);
         });
 
-        $grid->quickSearch('name', 'username', 'phone_number')->placeholder('Search by name, username, phone number');
+        $grid->quickSearch('name', 'username', 'phone_number')->placeholder('Search by name, username');
 
         $grid->disableBatchActions();
         $grid->column('id', 'ID')->sortable();
@@ -57,7 +57,6 @@ class UserController extends AdminController
 
         $grid->column('email', 'email address')->sortable();
         $grid->model()->orderBy('id', 'desc');
-        $grid->column('phone_number', 'Phone number');
         $grid->column('name', trans('admin.name'))->sortable();
         $grid->column('sex', 'Gender');
 
@@ -80,7 +79,6 @@ class UserController extends AdminController
                 }
             });
 
-        $grid->column('address', 'Address');
         $grid->column('roles', trans('admin.roles'))
             ->pluck('name')->label();
         $grid->column('created_at', 'Registered')->sortable()
@@ -168,11 +166,7 @@ class UserController extends AdminController
         $form->select('company_id', 'Company')->options($companies)->rules('required');
         //departments
         $form->select('department_id', 'Department')->options($departments)->rules('required');
-        $form->date('dob', 'Date of birth');
-        $form->text('address', 'Address');
 
-        $form->text('phone_number', 'Phone number');
-        $form->image('avatar', 'Photo');
 
         $form->file('whatsapp', 'Signature file')
             ->help('Upload your signature file. It will be used in the system for signing documents.')

@@ -54,6 +54,15 @@ class VehicleRequestController extends AdminController
         $segs = request()->segments();
 
         $u = Admin::user();
+
+        //if security, disable actions
+        if ($u->isRole('security')) {
+            $grid->disableActions();
+            $grid->disableCreateButton();
+            $grid->disableRowSelector();
+            $grid->disableExport();
+        } 
+
         //is_closed archived-requests
         $grid->filter(function ($filter) use ($u, $segs) {
             $filter->disableIdFilter();
