@@ -199,12 +199,13 @@
                             <td>{{ $material->quantity ?? 'N/A' }}</td>
                             <td>{{ $material->unit ?? 'N/A' }}</td>
                             <td>
-                                @if (!empty($material->description))
+                                 {{ public_path('storage/' . $material->description) }}
+                               {{--  @if (!empty($material->description))
                                     <img width="300" src="{{ public_path('storage/' . $material->description) }}"
                                         alt="Material Photo" style="width: 100px; height: auto;">
-                                @else
-                                    N/A
-                                @endif
+                                @else 
+                                    {{ public_path('storage/' . $material->description) }}
+                                @endif --}}
                             </td>
                         </tr>
                     @endforeach
