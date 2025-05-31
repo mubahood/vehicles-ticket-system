@@ -202,9 +202,9 @@
                                 @if (!empty($material->description))
                                     =====> {{ public_path('storage/' . $material->description) }} <=====<br>
                                         =====> {{ $material->description }} <====<br>
-                                            <img width="300"
+                                        {{--     <img width="300"
                                                 src="{{ public_path('storage/' . $material->description) }}"
-                                                alt="Material Photo" style="width: 100px; height: auto;">
+                                                alt="Material Photo" style="width: 100px; height: auto;"> --}}
                                         @else
                                             N/A
                                 @endif
