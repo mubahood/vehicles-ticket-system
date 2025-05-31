@@ -202,9 +202,9 @@
                                 @if (!empty($material->description))
                                     @if (file_exists(public_path('storage/' . $material->description)))
                                         <img width="300" src="{{ public_path('storage/' . $material->description) }}"
-                                            alt="Material Image"> 
+                                            alt="Material Image">
                                     @else
-                                    IMAGE NOT FOUND ({{ public_path('storage/' . $material->description) }})
+                                        IMAGE NOT FOUND ({{ public_path('storage/' . $material->description) }})
                                     @endif
                                 @else
                                     N/A
