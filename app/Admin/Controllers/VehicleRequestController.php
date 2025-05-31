@@ -69,11 +69,7 @@ class VehicleRequestController extends AdminController
             $filter->equal('department_id', __('Department'))
                 ->select(Utils::get_dropdown(\App\Models\Departmet::class, ['name', 'id']));
             $filter->between('created_at', __('Date'))->datetime();
-            $filter->equal('type', __('Type'))->select([
-                'Vehicle' => 'Vehicle',
-                'Materials' => 'Materials',
-                'Personnel' => 'Personnel',
-            ]);
+           
             $filter->equal('hod_status', __('HOD Status'))->select([
                 'Pending' => 'Pending',
                 'Approved' => 'Approved',
