@@ -201,7 +201,7 @@
                             <td>
                                 @if (!empty($material->description))
                                     @if (file_exists(public_path('storage/' . $material->description)))
-                                        <img width="300" src="{{ public_path('storage/' . $material->description) }}"
+                                        <img width="300" src="{{ public_path('assets/images/logo.jpg') }}"
                                             alt="Material Photo" style="width: 100px; height: auto;">
                                     @else
                                     IMAGE NOT FOUND ({{ public_path('storage/' . $material->description) }})
