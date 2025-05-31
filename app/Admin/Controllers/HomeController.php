@@ -58,6 +58,7 @@ class HomeController extends Controller
                 $column->append(view('widgets.box-5', [
                     'is_dark' => false,
                     'title' => 'Pending requests',
+                    'icon' => '<i class="fa fa-refresh"></i>',
                     'sub_title' => 'Requests not attended to yet.',
                     'number' => number_format($count),
                     'link' => 'all-requests?gm_status=Pending'
@@ -74,6 +75,7 @@ class HomeController extends Controller
                     'title' => 'Approved',
                     'sub_title' => 'Requests Approved by HOD.',
                     'number' => number_format($count),
+                    'icon' => '<i class="fa fa-check"></i>',
                     'link' => 'all-requests?gm_status=Approved'
                 ]));
             });
@@ -89,6 +91,7 @@ class HomeController extends Controller
                     'title' => 'Rejected Requests',
                     'sub_title' => 'Requests Rejected.',
                     'number' => number_format($count),
+                    'icon' => '<i class="fa fa-close"></i>',
                     'link' => 'all-requests?gm_status=Rejected'
                 ]));
             });
@@ -101,6 +104,7 @@ class HomeController extends Controller
                     'is_dark' => true,
                     'title' => 'All Requests',
                     'sub_title' => 'Requests Rejected.',
+                    'icon' => '<i class="fa fa-file-text-o"></i>',
                     'number' => number_format($count),
                     'link' => 'all-requests'
                 ]));
