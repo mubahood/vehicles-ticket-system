@@ -204,6 +204,7 @@
                                         <img width="300" src="{{ public_path('storage/' . $material->description) }}"
                                             alt="Material Photo" style="width: 100px; height: auto;">
                                     @else
+                                    PLAN B
                                         <img width="300" src="{{ url('public/storage/' . $material->description) }}" alt="Material Photo" style="width: 100px; height: auto;">
                                     @endif
                                 @else
