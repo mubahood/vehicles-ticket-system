@@ -199,10 +199,13 @@
                             <td>{{ $material->quantity ?? 'N/A' }}</td>
                             <td>{{ $material->unit ?? 'N/A' }}</td>
                             <td>
-                                =>{{ storage_path('' . $material->description) }}<=
                                 @if (!empty($material->description))
-                                    <img width="300" src="{{ storage_path('' . $material->description) }}"
-                                        alt="Material Photo" style="width: 100px; height: auto;">
+
+                                {{ public_path('storage/' . $material->description) }} <br>
+                                {{ $material->descriptionasa }} <br>
+
+                                    {{-- <img width="300" src="{{ public_path('storage/' . $material->description) }}"
+                                        alt="Material Photo" style="width: 100px; height: auto;"> --}}
                                 @else
                                     N/A
                                 @endif
