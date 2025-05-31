@@ -200,7 +200,7 @@
                             <td>{{ $material->unit ?? 'N/A' }}</td>
                             <td>
                                 @if (!empty($material->description))
-                                    <img width="300" src="{{ storage_path('storage/' . $material->description) }}"
+                                    <img width="300" src="{{ storage_path('' . $material->description) }}"
                                         alt="Material Photo" style="width: 100px; height: auto;">
                                 @else
                                     N/A
