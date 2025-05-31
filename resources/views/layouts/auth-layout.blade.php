@@ -9,7 +9,7 @@
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
 
     @if (!is_null($favicon = Admin::favicon()))
-    <link rel="shortcut icon" href="{{ $favicon }}">
+        <link rel="shortcut icon" href="{{ $favicon }}">
     @endif
 
     <!-- Bootstrap 3.3.5 -->
@@ -23,12 +23,14 @@
 
     <style>
         /* Full-page background image */
-        html, body {
+        html,
+        body {
             height: 100%;
             margin: 0;
         }
+
         body.login-page {
-            background: url('{{ asset("assets/images/syama-1.jpg") }}') no-repeat center center fixed;
+            background: url('{{ asset('assets/images/syama-1.jpg') }}') no-repeat center center fixed;
             background-size: cover;
             display: flex;
             align-items: center;
@@ -45,7 +47,7 @@
 
         /* White “card” styling */
         .login-box-body {
-            background: rgba(255, 255, 255, 0.95) !important;
+            background: rgba(255, 255, 255) !important;
             border-radius: 15px !important;
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
             padding: 30px 25px;
@@ -76,16 +78,20 @@
             height: 45px;
             transition: border-color 0.2s;
         }
+
         .login-box-body .form-control:focus {
             border-color: #0f3150;
             box-shadow: none;
         }
+
         .login-box-body .glyphicon {
             color: #888;
         }
+
         .has-error .form-control {
             border-color: #a94442;
         }
+
         .has-error .control-label {
             color: #a94442;
             margin-bottom: 5px;
@@ -102,6 +108,7 @@
             font-weight: 600;
             text-transform: uppercase;
         }
+
         .login-box-body .btn-primary:hover {
             background-color: #0f3150;
         }
@@ -111,6 +118,7 @@
             margin-top: 25px;
             text-align: center;
         }
+
         .footer p {
             font-size: 12px;
             color: #0f3150;
@@ -123,16 +131,20 @@
     <div class="login-box">
         <div class="login-box-body">
             <div class="login-logo">
-                <img src="{{ url('public/assets/images/logo.jpg') }}" alt="Logo">
+                <img style="max-width: 200px; height: auto;" src="{{ url('public/assets/images/somisy.png') }}"
+                    alt="Logo">
             </div>
+
+            <hr>
+
             <p class="login-box-msg text-uppercase p-0 m-0">
                 {{ env('APP_NAME') }}
             </p>
-            <hr>
+
 
             @yield('content')
 
-            <hr>
+
             <div class="footer">
                 <p>© {{ date('Y') }} {{ env('APP_NAME') }}. All rights reserved.</p>
             </div>

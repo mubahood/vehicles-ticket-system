@@ -359,7 +359,11 @@ class AuthController extends Controller
 
 
 
-        $form->mobile('whatsapp', 'Whatsapp number')->options(['mask' => '+999 9999 99999']);
+        $form->file('whatsapp', 'Signature file')
+            ->help('Upload your signature file. It will be used in the system for signing documents.')
+            ->rules('nullable|mimes:jpg,jpeg,png,gif,svg,bmp|max:2048')
+            ->uniqueName()
+            ->removable(); 
 
 
         $form->divider('System account information');

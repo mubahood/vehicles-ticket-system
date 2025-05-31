@@ -30,7 +30,7 @@ class UserController extends AdminController
 
         $grid = new Grid(new $userModel());
 
-            //add filter options
+        //add filter options
         $grid->filter(function ($filter) {
 
             $filter->disableIdFilter();
@@ -40,14 +40,12 @@ class UserController extends AdminController
                 ->select($departments);
 
             //by company
-            $companies = Company::all()->pluck('name', 'id'); 
+            $companies = Company::all()->pluck('name', 'id');
 
             $filter->equal('company_id', 'Company')
                 ->select($companies);
+        });
 
-            
-        }); 
-  
         $grid->quickSearch('name', 'username', 'phone_number')->placeholder('Search by name, username, phone number');
 
         $grid->disableBatchActions();
@@ -86,7 +84,7 @@ class UserController extends AdminController
         $grid->column('roles', trans('admin.roles'))
             ->pluck('name')->label();
         $grid->column('created_at', 'Registered')->sortable()
-            ->hide(); 
+            ->hide();
 
         $grid->actions(function (Grid\Displayers\Actions $actions) {
             if ($actions->getKey() == 1) {
@@ -107,7 +105,7 @@ class UserController extends AdminController
                 return '<a href="' . $url . '" class="btn btn-xs btn-primary" target="_blank">Send Password Reset Mail</a>';
             });
 
-    
+
 
         return $grid;
     }
@@ -175,6 +173,14 @@ class UserController extends AdminController
 
         $form->text('phone_number', 'Phone number');
         $form->image('avatar', 'Photo');
+
+        $form->file('whatsapp', 'Signature file')
+            ->help('Upload your signature file. It will be used in the system for signing documents.')
+            ->rules('nullable|mimes:jpg,jpeg,png,gif,svg,bmp|max:2048')
+            ->uniqueName()
+            ->removable();
+
+
         $form->password('password', trans('admin.password'))->rules('required|confirmed');
         $form->password('password_confirmation', trans('admin.password_confirmation'))->rules('required')
             ->default(function ($form) {

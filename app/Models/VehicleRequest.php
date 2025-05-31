@@ -358,4 +358,9 @@ class VehicleRequest extends Model
     {
         return $this->belongsTo(Departmet::class, 'department_id');
     }
+
+    public function get_gm() {
+        $gm = Utils::get_general_managers();
+        return $gm;
+    }
 }

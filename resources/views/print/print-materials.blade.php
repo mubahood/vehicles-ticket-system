@@ -1,6 +1,42 @@
 @if (!isset($item))
     @php throw new Exception('VehicleRequest item not set for PDF generation'); @endphp
 @endif
+@php
+
+    $hod = null;
+    $gm = $item->get_gm();
+    $gm_name = 'N/A';
+    $gm_sig = null;
+
+    if ($gm != null) {
+        $gm_name = $gm->name;
+        if ($gm->whatsapp != null) {
+            if (file_exists(public_path('storage/' . $gm->whatsapp))) {
+                $gm_sig = $gm->whatsapp;
+            } else {
+                $gm_sig = null;
+            }
+        }
+    }
+
+    $hod_sig = null;
+    $hod_name = 'N/A';
+    if ($item->department != null) {
+        $hod = $item->department->hod;
+        if ($hod != null) {
+            $hod_name = $hod->name;
+        }
+    }
+
+    if ($hod != null && $hod->whatsapp != null) {
+        if (file_exists(public_path('storage/' . $hod->whatsapp))) {
+            $hod_sig = $hod->whatsapp;
+        } else {
+            $hod_sig = null;
+        }
+    }
+
+@endphp
 
 <!DOCTYPE html>
 <html lang="en">
@@ -217,6 +253,41 @@
         @endif
 
     </div>
+
+    <h2 style="text-align: center;">AUTHORISED SIGNATURE APPROVALS</h2>
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; border: 3px solid #000;">
+        <thead>
+            <tr class="my-th" style="border: 3px solid #000;">
+                <th style="width: 25%; border: 3px solid #000;">Name</th>
+                <th style="width: 25%; border: 3px solid #000;">Position</th>
+                <th style="width: 25%; border: 3px solid #000;">Signature</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="my-td" style="border: 3px solid #000;">
+                <td style="border: 3px solid #000;">{{ $hod_name }}</td>
+                <td style="border: 3px solid #000;">Head of Department (HOD)</td>
+                <td style="border: 3px solid #000; height: 80px; padding: 0px;">
+                    {{-- Check if the second approver has a signature --}}
+                    @if (!empty($hod_sig))
+                        {{-- check if $hod_sig is not null and dsplay it as an asset --}}
+                        <img width="100" src="{{ asset('storage/' . $hod_sig) }}" alt="Signature">
+                    @else
+                    @endif
+                </td>
+            </tr>
+            <tr class="my-td" style="border: 3px solid #000;">
+                <td style="border: 3px solid #000;">{{ $gm_name }}</td>
+                <td style="border: 3px solid #000;">General Manager (GM)</td>
+                <td style="border: 3px solid #000; height: 80px; padding: 0px;">
+                    @if (!empty($gm_sig))
+                        <img width="100" src="{{ asset('storage/' . $gm_sig) }}" alt="Signature">
+                    @endif
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
 </body>
 
 </html>
