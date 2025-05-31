@@ -154,9 +154,8 @@
                         Resident & Vehicle Off Site Travel Approval</h2>
                 </td>
                 <td>
-                    {{ public_path('assets/images/logo.jpg') }}
-                    {{-- <img style="width: 150px; height: 50px; float: right;"
-                        src="{{ public_path('assets/images/logo.jpg') }}" alt="Company Logo"> --}}
+                    <img style="width: 150px; height: 50px; float: right;" {{-- Use public_path for images in PDF --}}
+                        src="{{ public_path('assets/images/logo.jpg') }}" alt="Company Logo">
                 </td>
             </tr>
         </table>
