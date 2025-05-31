@@ -200,13 +200,14 @@
                             <td>{{ $material->unit ?? 'N/A' }}</td>
                             <td>
                                 @if (!empty($material->description))
-                                    =====> {{ public_path('storage/' . $material->description) }} <=====<br>
-                                        =====> {{ $material->description }} <====<br>
-                                        {{--     <img width="300"
-                                                src="{{ public_path('storage/' . $material->description) }}"
-                                                alt="Material Photo" style="width: 100px; height: auto;"> --}}
-                                        @else
-                                            N/A
+                                    @if (file_exists(public_path('storage/' . $material->description)))
+                                        <img width="300" src="{{ public_path('storage/' . $material->description) }}"
+                                            alt="Material Photo" style="width: 100px; height: auto;">
+                                    @else
+                                        <img width="300" src="{{ url('public/storage/' . $material->description) }}" alt="Material Photo" style="width: 100px; height: auto;">
+                                    @endif
+                                @else
+                                    N/A
                                 @endif
                             </td>
                         </tr>
