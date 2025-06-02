@@ -52,8 +52,16 @@ class HomeController extends Controller
 
             // Pending
             $row->column(3, function (Column $column) use ($conditions) {
+
+                //gm_status
+                $conditions['gm_status'] = 'Pending';
+                $u = Admin::user();
+                if ($u->isRole('gm')) {
+                    $conditions['hod_status'] = 'Approved';
+                    $conditions['gm_status'] = 'Pending';
+                }
+
                 $count = VehicleRequest::where($conditions)
-                    ->where('hod_status', 'Pending')
                     ->count();
                 $column->append(view('widgets.box-5', [
                     'is_dark' => false,
@@ -84,7 +92,7 @@ class HomeController extends Controller
             $row->column(3, function (Column $column) use ($conditions) {
 
                 $count = VehicleRequest::where($conditions)
-                    ->where('hod_status', 'Rejected')
+                    ->where('gm_status', 'Rejected')
                     ->count();
                 $column->append(view('widgets.box-5', [
                     'is_dark' => false,

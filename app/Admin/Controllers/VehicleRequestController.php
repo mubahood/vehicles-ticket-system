@@ -4,6 +4,7 @@ namespace App\Admin\Controllers;
 
 use App\Models\Utils;
 use App\Models\VehicleRequest;
+use Carbon\Carbon;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
@@ -61,7 +62,7 @@ class VehicleRequestController extends AdminController
             $grid->disableCreateButton();
             $grid->disableRowSelector();
             $grid->disableExport();
-        } 
+        }
 
         //is_closed archived-requests
         $grid->filter(function ($filter) use ($u, $segs) {
@@ -78,7 +79,7 @@ class VehicleRequestController extends AdminController
             $filter->equal('department_id', __('Department'))
                 ->select(Utils::get_dropdown(\App\Models\Departmet::class, ['name', 'id']));
             $filter->between('created_at', __('Date'))->datetime();
-           
+
             $filter->equal('hod_status', __('HOD Status'))->select([
                 'Pending' => 'Pending',
                 'Approved' => 'Approved',
@@ -113,8 +114,7 @@ class VehicleRequestController extends AdminController
             $conds['department_id'] = $u->department_id;
         }
         if ($u->isRole('gm')) {
-            $conds['hod_status'] = 'Approved';
-            $conds['gm_status'] = 'Pending';
+            // $conds['hod_status'] = 'Approved'; 
         }
 
         if ($u->isRole('security')) {
@@ -174,6 +174,14 @@ class VehicleRequestController extends AdminController
         if ($u->isRole('admin')) {
             $conds = [];
         }
+
+        //is achived => archived-requests
+        if (in_array('archived-requests', $segs)) {
+            $conds['is_closed'] = 'Yes';
+        } else {
+            $conds['is_closed'] = 'No';
+        } 
+
 
         $grid->model()
             ->where($conds)
@@ -243,6 +251,16 @@ class VehicleRequestController extends AdminController
                 'Approved' => 'success',
                 'Rejected' => 'danger',
             ])->sortable(); */
+
+        //requested_return_time expiry time
+        $grid->column('requested_departure_time', __('Requested Departure Time'))
+            ->display(function ($requested_departure_time) {
+                if ($requested_departure_time == null || $requested_departure_time == '') {
+                    return 'Invalid Departure Time';
+                }
+                return Utils::my_date($requested_departure_time);
+            })->sortable();
+
         $grid->column('hod_status', __('HOD Status'))
             ->label([
                 'Pending' => 'warning',
@@ -328,9 +346,30 @@ class VehicleRequestController extends AdminController
 
         if ($u->isRole('security')) {
             $grid->column('exit_record', __('Exit Records (Add)'))->display(function () {
+
+                if ($this->requested_return_time == null || $this->requested_return_time == '') {
+                    return 'Invalid Return Time';
+                }
+                $exipiry = null;
+                try {
+                    $exipiry = Carbon::parse($this->requested_return_time);
+                } catch (\Throwable $th) {
+                    //throw $th;
+                }
+                $now = Carbon::now();
+                if ($exipiry == null) {
+                    return 'Invalid Return Date';
+                }
+
+                //if has expired, return N/A
+                $now = Carbon::now();
+                if ($now->greaterThan($exipiry)) {
+                    return 'Expired';
+                }
+
                 //if gm not appoved, return N/A
                 if ($this->gm_status != 'Approved') {
-                    return 'N/A';
+                    return 'Not Approved';
                 }
                 $url_add_record = admin_url('exit-records/create?vehicle_request_id=' . $this->id);
                 return '<a href="' . $url_add_record . '" class="btn btn-xs btn-primary">Add Exit Record</a>';
