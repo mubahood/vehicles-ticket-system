@@ -180,7 +180,7 @@ class VehicleRequestController extends AdminController
             $conds['is_closed'] = 'Yes';
         } else {
             $conds['is_closed'] = 'No';
-        } 
+        }
 
 
         $grid->model()
@@ -585,15 +585,102 @@ class VehicleRequestController extends AdminController
                 ])->rules('required');
                 $form->text('hod_comment', 'HOD Remarks');
             }
+            if ($u->isRole('gm') || $u->isRole('hod')) {
+
+
+                $form->display('requested_departure_time', 'Requested Departure Time')
+                    ->default(Utils::my_date_1($record->requested_departure_time));
+                $form->display('requested_return_time', 'Requested Return Time')
+                    ->default(Utils::my_date_1($record->requested_return_time));
+                $form->display('destination', 'Destination')
+                    ->default($record->destination ?: 'N/A');
+                //justification
+                $form->display('justification', 'Justification')
+                    ->default($record->justification ?: 'N/A');
+
+                //if type
+                if ($record->type == 'Vehicle') {
+                    $form->display('vehicle_name', 'Vehicle')
+                        ->default($record->vehicle->registration_number . ' - ' . $record->vehicle->brand . ' - ' . $record->vehicle->model . ' - ' . $record->vehicle->vehicle_type);
+                } else if ($record->type == 'Materials') {
+                    //display materialsa as html table
+                    $materials = '<table class="table table-bordered"><thead><tr>
+                        <th>Material Name</th>
+                        <th>Quantity</th>
+                        <th>Unit</th>
+                        <th>Description</th> 
+                    </tr></thead><tbody>';
+                    foreach ($record->materialItems as $item) {
+                        $materials .= "<tr>
+                            <td>{$item->name}</td>
+                            <td>{$item->quantity}</td>
+                            <td>{$item->unit}</td>
+                            <td><img src='" . asset('storage/' . $item->description) . "' alt='Material Image' style='width: 100px; height: 100px;'></td>
+                        </tr>";
+                    }
+                    $materials .= '</tbody></table>';
+                    $form->html($materials, 'Materials Requested');
+                } else if ($record->type == 'Personnel') {
+                    $form->display('leave_type', __('Leave type'))->default($record->materials_requested);
+                }
+
+                //company_id check if applicant is not null then display company name
+                if ($record->applicant && $record->applicant->company) {
+                    $form->display('company_id', 'Company')->default($record->applicant->company->name);
+
+                    //department_id
+                    if ($record->applicant->department) {
+                        $form->display('department_id', 'Department')->default($record->applicant->department->name);
+                    } else {
+                        $form->display('department_id', 'Department')->default('N/A');
+                    }
+                } else {
+                    $form->display('company_id', 'Company')->default('N/A');
+                }
+                //co_drivers
+                $co_drivers = '';
+                if ($record->co_drivers) {
+                    $co_drivers = json_decode($record->co_drivers, true);
+                    if (is_array($co_drivers)) {
+                        $co_drivers = implode(', ', $co_drivers);
+                    } else {
+                        $co_drivers = 'N/A';
+                    }
+                } else {
+                    $co_drivers = 'N/A';
+                }
+
+                //is_somisy_vehicle display Yes or No
+                $form->display('is_somisy_vehicle', 'Is Somisy Vehicle')->default($record->is_somisy_vehicle == 'Yes' ? 'Yes' : 'No');
+
+                //is_camp_resident
+                $form->display('is_camp_resident', 'Is Camp Resident')->default($record->is_camp_resident == 'Yes' ? 'Yes' : 'No');
+
+                //expatirate_type
+                $form->display('expatirate_type', 'Expatriate Type')->default($record->expatirate_type == 'Yes' ? 'Yes' : ($record->expatirate_type == 'Escort' ? 'Escort' : 'No'));
+
+                //licence_type
+                $form->display('licence_type', 'Licence Type')->default($record->licence_type);
+            }
+
+
             if ($u->isRole('gm') && $record->hod_status == 'Approved') {
+
+
+                $form->divider('Decision and Comments');
+
                 $form->radio('gm_status', 'GM Status')->options([
                     'Pending' => 'Pending',
                     'Approved' => 'Approved',
                     'Rejected' => 'Rejected'
                 ])->rules('required');
                 $form->text('gm_comment', 'GM Remarks');
-                $departments = \App\Models\Departmet::all()->pluck('name', 'id');
-                $form->select('department_id', 'Department')->options($departments)->rules('required');
+
+                //close
+                $form->radio('is_closed', 'Close Request')->options([
+                    'Yes' => 'Yes',
+                    'No' => 'No'
+                ])->default('No')->rules('required');
             }
         }
 
