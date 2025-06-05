@@ -2,6 +2,7 @@
 
 namespace App\Admin\Controllers;
 
+use App\Models\Departmet;
 use App\Models\Utils;
 use App\Models\VehicleRequest;
 use Carbon\Carbon;
@@ -493,6 +494,12 @@ class VehicleRequestController extends AdminController
             $form->hidden('applicant_id', __('Applicant'))->default($u->id);
             $form->display('applicant_name', __('Applicant'))->default($u->name);
 
+            $form->datetime('requested_departure_time', __('Requested Departure Time'))->rules('required');
+
+            if (in_array('vehicle-requests', $segs)) {
+                $form->datetime('requested_return_time', __('Requested Return Time'))->rules('required');
+            }
+
 
             if (in_array('vehicle-requests', $segs)) {
                 $name_of_range = "Departure and Return time";
@@ -509,8 +516,7 @@ class VehicleRequestController extends AdminController
 
 
                 $form->divider();
-                $form->datetime('requested_departure_time', __('Requested Departure Time'))->rules('required');
-                $form->datetime('requested_return_time', __('Requested Return Time'))->rules('required');
+
                 $form->text('destination', __('Destination'))->rules('required');
 
 
@@ -522,16 +528,20 @@ class VehicleRequestController extends AdminController
                 $form->divider();
                 $form->textarea('materials_requested', 'Passenger information (name, contact) seperated by comma.');
             }
+
             if (in_array('materials-requests', $segs)) {
                 $name_of_range  = "Requested time and Return time";
                 $form->hidden('type', __('Type'))->default('Materials');
-                //many MaterialItem
-                $form->hasMany('materialItems', 'Click on "NEW" to add Material Item Requested For', function (Form\NestedForm $form) {
-                    $form->text('name', 'Material Name')->rules('required');
-                    $form->decimal('quantity', 'Material Quantity')->rules('required');
-                    $form->text('unit', 'Unit')->rules('required');
-                    $form->image('description', 'Photo');
-                });
+                if ($form->isCreating()) {
+
+                    //many MaterialItem
+                    $form->hasMany('materialItems', 'Click on "NEW" to add Material Item Requested For', function (Form\NestedForm $form) {
+                        $form->text('type', 'Material Name')->rules('required');
+                        $form->decimal('quantity', 'Material Quantity')->rules('required');
+                        $form->text('unit', 'Unit')->rules('required');
+                        $form->image('description', 'Photo');
+                    });
+                }
             } else if (in_array('leave-requests', $segs)) {
                 $name_of_range  = "Leave start time and Leave end time";
                 $form->hidden('type', __('Type'))->default('Personnel');
@@ -556,42 +566,31 @@ class VehicleRequestController extends AdminController
             //if type is vehicle
             if ($record->type == 'Vehicle') {
                 $form->display('vehicle_name', __('Vehicle'))->default($record->vehicle->registration_number . ' - ' . $record->vehicle->brand . ' - ' . $record->vehicle->model . ' - ' . $record->vehicle->vehicle_type);
-
-                $form->display('requested_departure_time', __('Requested Departure Time'));
-                $form->display('requested_return_time', __('Requested Return Time'));
             } else if ($record->type == 'Materials') {
-                /* $marerials = "";
-                foreach ($record->materialItems as $item) {
-                    $marerials .= $item->name . " - " . $item->quantity . " " . $item->unit . ", ";
-                }
-                $form->display('materials_requested', __('Materials requested'))->default($marerials);  */
 
-                $form->hasMany('materialItems', 'Click on "NEW" to add Material Item Requested For', function (Form\NestedForm $form) {
-                    $form->text('type', 'Material Requested')->rules('required');
-                    $form->decimal('quantity', 'Material Quantity')->rules('required');
-                    $form->text('unit', 'Unit')->rules('required');
-                    $form->image('description', 'Photo');
-                });
+                if ($form->isCreating()) {
+                    $form->hasMany('materialItems', 'Click on "NEW" to add Material Item Requested For', function (Form\NestedForm $form) {
+                        $form->text('type', 'Material Requested')->rules('required');
+                        $form->decimal('quantity', 'Material Quantity')->rules('required');
+                        $form->text('unit', 'Unit')->rules('required');
+                        $form->image('description', 'Photo');
+                    });
+                }
             } else if ($record->type == 'Personnel') {
                 $form->display('leave_type', __('Leave type'))->default($record->materials_requested);
             }
 
             $u = Admin::user();
-            if ($u->isRole('hod')) {
-                $form->radio('hod_status', 'HOD Status')->options([
-                    'Pending' => 'Pending',
-                    'Approved' => 'Approved',
-                    'Rejected' => 'Rejected'
-                ])->rules('required');
-                $form->text('hod_comment', 'HOD Remarks');
-            }
-            if ($u->isRole('gm') || $u->isRole('hod')) {
 
+            if (($u->isRole('gm') || $u->isRole('hod')) && $record != null) {
 
                 $form->display('requested_departure_time', 'Requested Departure Time')
                     ->default(Utils::my_date_1($record->requested_departure_time));
-                $form->display('requested_return_time', 'Requested Return Time')
-                    ->default(Utils::my_date_1($record->requested_return_time));
+
+                if ($record->type == 'Vehicle') {
+                    $form->display('requested_return_time', 'Requested Return Time')
+                        ->default(Utils::my_date_1($record->requested_return_time));
+                }
                 $form->display('destination', 'Destination')
                     ->default($record->destination ?: 'N/A');
                 //justification
@@ -612,7 +611,7 @@ class VehicleRequestController extends AdminController
                     </tr></thead><tbody>';
                     foreach ($record->materialItems as $item) {
                         $materials .= "<tr>
-                            <td>{$item->name}</td>
+                            <td>{$item->type}</td>
                             <td>{$item->quantity}</td>
                             <td>{$item->unit}</td>
                             <td><img src='" . asset('storage/' . $item->description) . "' alt='Material Image' style='width: 100px; height: 100px;'></td>
@@ -631,8 +630,11 @@ class VehicleRequestController extends AdminController
                     //department_id
                     if ($record->applicant->department) {
                         $form->display('department_id', 'Department')->default($record->applicant->department->name);
-                    } else {
-                        $form->display('department_id', 'Department')->default('N/A');
+                    } else { 
+                        $dept = Departmet::find($record->applicant->department_id);
+                        if ($dept != null) {
+                            $form->display('dempt', 'Department')->default($dept->name); 
+                        }
                     }
                 } else {
                     $form->display('company_id', 'Company')->default('N/A');
@@ -661,6 +663,17 @@ class VehicleRequestController extends AdminController
 
                 //licence_type
                 $form->display('licence_type', 'Licence Type')->default($record->licence_type);
+            }
+
+
+            if ($u->isRole('hod')) {
+                $form->divider('HOD Decision and Comments');
+                $form->radio('hod_status', 'HOD Status')->options([
+                    'Pending' => 'Pending',
+                    'Approved' => 'Approved',
+                    'Rejected' => 'Rejected'
+                ])->rules('required');
+                $form->text('hod_comment', 'HOD Remarks');
             }
 
 
