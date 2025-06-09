@@ -13,7 +13,7 @@ return [
     'user_setting'          => 'User setting',
     'avatar'                => 'Avatar',
     'list'                  => 'List',
-    'new'                   => 'New',
+    'new'                   => 'Add New',
     'create'                => 'Create',
     'delete'                => 'Delete',
     'remove'                => 'Remove',
