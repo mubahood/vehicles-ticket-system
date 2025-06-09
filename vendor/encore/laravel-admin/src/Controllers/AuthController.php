@@ -375,6 +375,8 @@ class AuthController extends Controller
         $form->radio('change_password', 'Do you want to change password?')->options(['No' => 'No', 'Yes' => 'Yes'])
             ->when('Yes', function ($form) {
 
+                //has_changed_password yes
+                $form->hidden('has_changed_password')->default('Yes')->value('Yes');
 
 
                 $form->password('password', trans('admin.password'))->rules('confirmed|required');
@@ -396,6 +398,7 @@ class AuthController extends Controller
         $form->saving(function (Form $form) {
             if ($form->password && $form->model()->password != $form->password) {
                 $form->password = Hash::make($form->password);
+                $form->has_changed_password = 'Yes'; // Set has_changed_password to Yes if password is changed
             }
         });
 

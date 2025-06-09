@@ -58,7 +58,7 @@ class UserController extends AdminController
         $grid->column('email', 'email address')->sortable();
         $grid->model()->orderBy('id', 'desc');
         $grid->column('name', trans('admin.name'))->sortable();
-        $grid->column('sex', 'Gender');
+        $grid->column('sex', 'Gender')->hide();
 
         //department_id
         $grid->column('company_id', 'Company ')
@@ -78,6 +78,12 @@ class UserController extends AdminController
                     return 'N/A';
                 }
             });
+        
+        //Postion
+        $grid->column('position', 'Position')
+            ->display(function () {
+                return $this->position ?? 'N/A';
+            })->sortable();
 
         $grid->column('roles', trans('admin.roles'))
             ->pluck('name')->label();
@@ -157,9 +163,8 @@ class UserController extends AdminController
             ->updateRules(['required', "unique:{$connection}.{$userTable},email,{{id}}"]);
 
         $form->text('name', trans('admin.name'))->rules('required');
-        $form->radioCard('sex', 'Gender')
-            ->options(['Male' => 'Male', 'Female' => 'Female'])
-            ->rules('required');
+        $form->radio('sex', 'Gender')
+            ->options(['Male' => 'Male', 'Female' => 'Female']);
         $departments = Departmet::all()->pluck('name', 'id');
         //companies
         $companies = Company::all()->pluck('name', 'id');
@@ -167,6 +172,12 @@ class UserController extends AdminController
         //departments
         $form->select('department_id', 'Department')->options($departments)->rules('required');
 
+        //pos
+
+        //position
+        $form->text('position', 'Position')
+            ->help('Enter the position of the user in the company.')
+            ->rules('nullable|max:255'); 
 
         $form->file('whatsapp', 'Signature file')
             ->help('Upload your signature file. It will be used in the system for signing documents.')
@@ -174,16 +185,38 @@ class UserController extends AdminController
             ->uniqueName()
             ->removable();
 
+        /* 
+                        $table->string('change_password')->default('No')->nullable();
+            $table->string('has_changed_password')->default('No')->nullable();
+            $table->string('notify_account_created_by_email')->default('Yes')->nullable();
+            */
 
-        $form->password('password', trans('admin.password'))->rules('required|confirmed');
-        $form->password('password_confirmation', trans('admin.password_confirmation'))->rules('required')
-            ->default(function ($form) {
-                return $form->model()->password;
+        $form->checkbox('roles', trans('admin.roles'))->options($roleModel::all()->pluck('name', 'id'))
+        ->stacked();
+        $form->radio('change_password', 'Change Password')
+            ->options(['Yes' => 'Yes', 'No' => 'No'])
+            ->default('No')
+            ->rules('required')
+            ->when('Yes', function (Form $form) {
+                $form->password('password', trans('admin.password'))->rules('required|confirmed');
+                $form->password('password_confirmation', trans('admin.password_confirmation'))->rules('required')
+                    ->default(function ($form) {
+                        return $form->model()->password;
+                    });
             });
+
+        //notify_account_created_by_email notify user by email when account is created
+
+        if ($form->isCreating()) {
+            $form->radio('notify_account_created_by_email', 'Notify User by Email on Account Creation') 
+                ->options(['Yes' => 'Yes', 'No' => 'No'])
+                ->default('Yes')
+                ->rules('required');
+        }
 
         $form->ignore(['password_confirmation']);
 
-        $form->multipleSelect('roles', trans('admin.roles'))->options($roleModel::all()->pluck('name', 'id'));
+
         /*         $form->multipleSelect('permissions', trans('admin.permissions'))->options($permissionModel::all()->pluck('name', 'id')); */
 
         /*         $form->display('created_at', trans('admin.created_at'));
@@ -192,6 +225,11 @@ class UserController extends AdminController
         $form->saving(function (Form $form) {
             if ($form->password && $form->model()->password != $form->password) {
                 $form->password = Hash::make($form->password);
+            }
+
+            if ($form->password == null || $form->password == '') {
+                //set password default as 4321
+                $form->password = Hash::make('4321');
             }
         });
 

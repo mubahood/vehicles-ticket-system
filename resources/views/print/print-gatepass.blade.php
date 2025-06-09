@@ -172,6 +172,10 @@
                 <td style="width: 20%;">Name</td>
                 <td>{{ $item->applicant->name ?? 'N/A' }}</td>
             </tr>
+            <tr class="my-td">
+                <td style="width: 20%;">Position</td>
+                <td>{{ $item->applicant->position ?? 'N/A' }}</td>
+            </tr>
         </table>
 
 

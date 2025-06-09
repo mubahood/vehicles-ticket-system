@@ -5,6 +5,7 @@ namespace Encore\Admin\Auth\Database;
 use App\Models\Campus;
 use App\Models\Company;
 use App\Models\Departmet;
+use App\Models\User;
 use App\Models\UserHasProgram;
 use Carbon\Carbon;
 use Encore\Admin\Traits\DefaultDatetimeFormat;
@@ -73,6 +74,21 @@ class Administrator extends Model implements AuthenticatableContract, JWTSubject
                 $m->name = trim($n);
             }
         });
+
+        //created
+        self::created(function ($m) {
+            if($m->notify_account_created_by_email == 'Yes') {
+                $user = User::find($m->id);
+                if ($user != null) {
+                    try {
+                        $user->sendWelcomeMessage();  
+                    } catch (\Throwable $th) {
+                        //throw $th;
+                    }
+                }
+            }
+        }); 
+
         self::updating(function ($m) {
             $n = $m->first_name . " " . $m->last_name;
             if (strlen(trim($n)) > 1) {

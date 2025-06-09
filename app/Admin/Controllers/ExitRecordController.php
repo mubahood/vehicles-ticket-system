@@ -52,10 +52,10 @@ class ExitRecordController extends AdminController
             $filter->equal('employee_id', __('Employee'))
                 ->select($users);
             //exit_time range
-            $filter->between('exit_time', __('Exit time'))
+            $filter->between('exit_time', __('Check Out'))
                 ->datetime();
             //return_time range
-            $filter->between('return_time', __('Return time'))
+            $filter->between('return_time', __('Check In'))
                 ->datetime(); 
         });
 
@@ -110,11 +110,11 @@ class ExitRecordController extends AdminController
                 'exit' => 'Exit',
                 'return' => 'Returned',
             ]);
-        $grid->column('exit_time', __('Exit time'))
+        $grid->column('exit_time', __('Check Out'))
             ->display(function ($exit_time) {
                 return date('d-m-Y H:i:s', strtotime($exit_time));
             })->sortable();
-        $grid->column('return_time', __('Return time'))
+        $grid->column('return_time', __('Check In'))
             ->display(function ($return_time) {
                 if ($return_time == null || $return_time == '') {
                     return 'N/A';
@@ -143,8 +143,8 @@ class ExitRecordController extends AdminController
         $show->field('created_by_id', __('Created by id'));
         $show->field('status', __('Status'));
         $show->field('remarks', __('Remarks'));
-        $show->field('exit_time', __('Exit time'));
-        $show->field('return_time', __('Return time'));
+        $show->field('exit_time', __('Check Out'));
+        $show->field('return_time', __('Check In'));
 
         return $show;
     }
@@ -223,9 +223,9 @@ class ExitRecordController extends AdminController
                 'return' => 'Returned',
             ])->default('exit')
             ->when('exit', function (Form $form) {
-                $form->datetime('exit_time', __('Exit time'))->default(date('Y-m-d H:i:s'));
+                $form->datetime('exit_time', __('Check Out'))->default(date('Y-m-d H:i:s'));
             })->when('return', function (Form $form) {
-                $form->datetime('return_time', __('Return time'))->default(date('Y-m-d H:i:s'));
+                $form->datetime('return_time', __('Check In'))->default(date('Y-m-d H:i:s'));
             });
         $form->text('remarks', __('Remarks'));
 

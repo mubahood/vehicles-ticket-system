@@ -228,7 +228,7 @@ class VehicleRequestController extends AdminController
             })->sortable();
 
 
-        $grid->column('actual_return_time', __('Actual Return Time'))
+        $grid->column('actual_return_time', __('Actual Check In'))
             ->display(function ($actual_return_time) {
                 return date('d-m-Y H:i:s', strtotime($actual_return_time));
             })->sortable()
@@ -350,7 +350,7 @@ class VehicleRequestController extends AdminController
             $grid->column('exit_record', __('Exit Records (Add)'))->display(function () {
 
                 if ($this->requested_return_time == null || $this->requested_return_time == '') {
-                    return 'Invalid Return Time';
+                    return 'Invalid Check In';
                 }
                 $exipiry = null;
                 try {
@@ -448,8 +448,8 @@ class VehicleRequestController extends AdminController
                 <th>ID</th>
                 <th>Employee</th>
                 <th>Status</th>
-                <th>Exit Time</th>
-                <th>Return Time</th>
+                <th>Check Out</th>
+                <th>Check In</th>
                 <th>Remarks</th>
             </tr></thead><tbody>';
             foreach ($exitRecords as $rec) {
@@ -498,12 +498,12 @@ class VehicleRequestController extends AdminController
             $form->datetime('requested_departure_time', __('Requested Departure Time'))->rules('required');
 
             if (in_array('vehicle-requests', $segs)) {
-                $form->datetime('requested_return_time', __('Requested Return Time'))->rules('required');
+                $form->datetime('requested_return_time', __('Requested Check In'))->rules('required');
             }
 
 
             if (in_array('vehicle-requests', $segs)) {
-                $name_of_range = "Departure and Return time";
+                $name_of_range = "Departure and Check In";
                 $form->hidden('type', __('Type'))->default('Vehicle');
                 $form->select('vehicle_id', __('Vehicle'))->options(Utils::get_dropdown(\App\Models\Vehicle::class, ['registration_number', 'id', 'brand', 'model', 'vehicle_type']))->rules('required');
                 $form->html('if vehicle is not found, click here to add a new vehicle and refresh the page after adding<br>
@@ -531,7 +531,7 @@ class VehicleRequestController extends AdminController
             }
 
             if (in_array('materials-requests', $segs)) {
-                $name_of_range  = "Requested time and Return time";
+                $name_of_range  = "Requested time and Check In";
                 $form->hidden('type', __('Type'))->default('Materials');
                 if ($form->isCreating()) {
 
@@ -593,7 +593,7 @@ class VehicleRequestController extends AdminController
                     ->default(Utils::my_date_1($record->requested_departure_time));
 
                 if ($record->type == 'Vehicle') {
-                    $form->display('requested_return_time', 'Requested Return Time')
+                    $form->display('requested_return_time', 'Requested Check In')
                         ->default(Utils::my_date_1($record->requested_return_time));
                 }
                 $form->display('destination', 'Destination')

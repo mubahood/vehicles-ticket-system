@@ -626,6 +626,7 @@ class ComposerStaticInitda89eef54c810448a827ed04bb3da82f
         'App\\Admin\\Controllers\\DepartmetController' => __DIR__ . '/../..' . '/app/Admin/Controllers/DepartmetController.php',
         'App\\Admin\\Controllers\\ExitRecordController' => __DIR__ . '/../..' . '/app/Admin/Controllers/ExitRecordController.php',
         'App\\Admin\\Controllers\\HomeController' => __DIR__ . '/../..' . '/app/Admin/Controllers/HomeController.php',
+        'App\\Admin\\Controllers\\ImportUserDataController' => __DIR__ . '/../..' . '/app/Admin/Controllers/ImportUserDataController.php',
         'App\\Admin\\Controllers\\TrainingProviderAccreditationController' => __DIR__ . '/../..' . '/app/Admin/Controllers/TrainingProviderAccreditationController.php',
         'App\\Admin\\Controllers\\UserController' => __DIR__ . '/../..' . '/app/Admin/Controllers/UserController.php',
         'App\\Admin\\Controllers\\VehicleController' => __DIR__ . '/../..' . '/app/Admin/Controllers/VehicleController.php',

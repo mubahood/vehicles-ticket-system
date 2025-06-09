@@ -24,37 +24,12 @@ Route::get('send-new-password', function (Request $r) {
     if ($user == null) {
         dd("User not found.");
     }
-    $newPassword = rand(100000, 999999); // Generate a random 6-digit number
-    $user->password = password_hash($newPassword, PASSWORD_BCRYPT);
-    $user->save();
-    //send email
-    $APP_NAME = env('APP_NAME', 'Vehcle Management System');
-    $subject = "Welcome to " . env('APP_NAME') . " - Your Account Details";
-    $LOGIN_URL = admin_url();
-    $message = <<<HTML
-    <h3>Hello {$user->name},</h3>
-    <p>Welcome to <strong> {$APP_NAME} </strong>!</p>
-    <p><strong>Your login details:</strong></p>
-    <ul>
-        <li><strong>Email:</strong> {$user->email}</li>
-        <li><strong>Temporary Password:</strong> {$newPassword}</li>
-    </ul>
-    <p>Log in here: <a href="{$LOGIN_URL}">Login</a></p>
-    <p>Please change your password after logging in.</p>
-    <p>Thank you.</p>
-    HTML;
-
     try {
-        $data['body'] = $message;
-        $data['name'] = $user->name;
-        $data['email'] = $user->email;
-        $data['subject'] = $subject;
-        Utils::mail_sender($data);
-        dd("Email sent successfully to " . $user->email);
-    } catch (\Throwable $th) {
-        // Handle email sending failure
-        dd("Failed to send email: " . $th->getMessage());
+        $user->sendWelcomeMessage();
+    } catch (\Exception $e) {
+        return "Error sending new password: " . $e->getMessage();
     }
+    dd("New password sent to user: " . $user->email);
 });
 Route::get('import-user-data', function (Request $r) {
     $rec = ImportUserData::find($r->id);

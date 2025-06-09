@@ -67,15 +67,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
 
-    public function campus()
-    {
-        return $this->belongsTo(Campus::class, 'campus_id');
-    }
-
-    public function programs()
-    {
-        return $this->hasMany(UserHasProgram::class, 'user_id');
-    }
+ 
 
     //email getter
     public function getEmailAttribute($value)
@@ -99,5 +91,44 @@ class User extends Authenticatable implements JWTSubject
     public function company()
     {
         return $this->belongsTo(Company::class, 'company_id');
-    } 
+    }
+
+    //public send welcom message
+    public function sendWelcomeMessage()
+    {
+        $user = $this;
+        if ($user == null) {
+            throw new \Exception("User not found.");
+        }
+        $newPassword = rand(100000, 999999); // Generate a random 6-digit number
+        $user->password = password_hash($newPassword, PASSWORD_BCRYPT);
+        $user->save();
+        //send email
+        $APP_NAME = env('APP_NAME', 'Vehcle Management System');
+        $subject = "Welcome to " . env('APP_NAME') . " - Your Account Details";
+        $LOGIN_URL = admin_url();
+        $message = <<<HTML
+                    <h3>Hello {$user->name},</h3>
+                    <p>Welcome to <strong> {$APP_NAME} </strong>!</p>
+                    <p><strong>Your login details:</strong></p>
+                    <ul>
+                        <li><strong>Email:</strong> {$user->email}</li>
+                        <li><strong>Temporary Password:</strong> {$newPassword}</li>
+                    </ul>
+                    <p>Log in here: <a href="{$LOGIN_URL}">Login</a></p>
+                    <p>Please change your password after logging in.</p>
+                    <p>Thank you.</p>
+                    HTML;
+
+        try {
+            $data['body'] = $message;
+            $data['name'] = $user->name;
+            $data['email'] = $user->email;
+            $data['subject'] = $subject;
+            Utils::mail_sender($data);
+        } catch (\Throwable $th) {
+            // Handle email sending failure
+            throw new \Exception("Failed to send email to {$user->email}. Error: " . $th->getMessage());
+        }
+    }
 }

@@ -22,6 +22,18 @@ class HomeController extends Controller
         if ($u == null) {
             return $content;
         }
+        if ($u->has_changed_password != 'Yes') {
+            $update_profile_url = admin_url('auth/setting') . '?step=profile_update';
+            //redect using js after full loading
+            echo "<script>
+                window.onload = function() {
+                    window.location.href = '$update_profile_url';
+                };
+            </script>";
+            return $content->withError('You must change your password before proceeding. Redirecting to profile update page...');
+        }
+ 
+
 
         $dept = Departmet::find($u->department_id);
         if ($dept == null) {
