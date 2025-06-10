@@ -69,7 +69,7 @@ class VehicleRequestController extends AdminController
         $grid->filter(function ($filter) use ($u, $segs) {
             $filter->disableIdFilter();
 
-            $filter->equal('applicant_id', __('Applicant'))
+            $filter->equal('applicant_id', __('Requestor'))
                 ->select(Utils::get_dropdown(\App\Models\User::class, ['name', 'id']));
             $filter->equal('vehicle_id', __('Vehicle'))
                 ->select(Utils::get_dropdown(\App\Models\Vehicle::class, ['registration_number', 'id', 'brand', 'model', 'vehicle_type']));
@@ -193,7 +193,7 @@ class VehicleRequestController extends AdminController
         $grid->column('created_at', __('Date'))->display(function ($created_at) {
             return date('d-m-Y', strtotime($created_at));
         })->sortable();
-        $grid->column('applicant_id', __('Applicant'))
+        $grid->column('applicant_id', __('Requestor'))
             ->display(function ($applicant_id) {
                 if ($this->applicant) {
                     return $this->applicant->name;
@@ -571,7 +571,7 @@ class VehicleRequestController extends AdminController
             if ($record == null) {
                 throw new \Exception("Record not found");
             }
-            $form->display('applicant_name', __('Applicant name'))->default($record->applicant->name);
+            $form->display('applicant_name', __('Requestor name'))->default($record->applicant->name);
 
             //if type is vehicle
             if ($record->type == 'Vehicle') {
