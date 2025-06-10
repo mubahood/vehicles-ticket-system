@@ -397,44 +397,76 @@ class VehicleRequestController extends AdminController
         $vehicleRequest = VehicleRequest::findOrFail($id);
         $show = new Show($vehicleRequest);
 
+        $id = $vehicleRequest->id;
+        $record = VehicleRequest::find($id);
+        if ($record == null) {
+            throw new \Exception("Record not found");
+        }
+
         $show->field('created_at', __('Created'))
             ->as(function ($created_at) {
                 return Utils::my_date($created_at);
             });
 
         // Applicant and Vehicle Information
-        $show->field('applicant_id', __('Applicant'))->as(function ($applicant_id) {
+        $show->field('applicant_id', __('Requestor'))->as(function ($applicant_id) {
             return $this->applicant ? $this->applicant->name : 'N/A';
         });
-        $show->field('vehicle_id', __('Vehicle'))->as(function ($vehicle_id) {
-            if ($this->vehicle) {
-                return $this->vehicle->registration_number . ' - '  . $this->vehicle->vehicle_type;
-            }
-            return 'N/A';
-        });
-        // Request Details
-        $show->field('destination', __('Destination'))->display(function ($destination) {
-            return $destination ?: 'N/A';
-        });
-        $show->field('justification', __('Justification'))->display(function ($justification) {
-            return $justification ?: 'N/A';
-        });
-        $show->field('status', __('Status'))->display(function ($status) {
-            return $status ?: 'N/A';
-        });
+
+        if ($record->type == 'Vehicle') {
+            $show->field('vehicle_id', __('Vehicle'))->as(function ($vehicle_id) {
+                if ($this->vehicle) {
+                    return $this->vehicle->registration_number . ' - '  . $this->vehicle->vehicle_type;
+                }
+                return 'N/A';
+            });
+            // Request Details
+            $show->field('destination', __('Destination'))->as(function ($destination) {
+                return $destination ?: 'N/A';
+            });
+            $show->field('justification', __('Justification'))->as(function ($justification) {
+                return $justification ?: 'N/A';
+            });
+        }
+        if ($record->type == 'Materials') {
+            $show->field('materialItems', __('Materials Requested'))->as(function ($materialItems) {
+                if ($materialItems->isEmpty()) {
+                    return 'No materials requested';
+                }
+                $html = '<table class="table table-bordered"><thead><tr>
+                <th>Description</th>
+                <th>Quantity</th>
+                <th>Serial Number</th>
+                <th>Photo</th>
+                </tr></thead><tbody>';
+                foreach ($materialItems as $item) {
+                    $photo = $item->description ? "<img src='" . asset('storage/' . $item->description) . "' style='width:80px;height:80px;' />" : 'N/A';
+                    $html .= "<tr>
+                        <td>{$item->type}</td>
+                        <td>{$item->quantity}</td>
+                        <td>{$item->unit}</td>
+                        <td>{$photo}</td>
+                </tr>";
+                }
+                $html .= '</tbody></table>';
+                return $html;
+            })->unescape();
+        }
+
+
 
         // Approval and Security Statuses
-        $show->field('hod_status', __('HOD Status'))->display(function ($status) {
+        $show->field('hod_status', __('HOD Status'))->as(function ($status) {
             return $status ?: 'N/A';
         });
-        $show->field('gm_status', __('GM Status'))->display(function ($status) {
+        $show->field('gm_status', __('GM Status'))->as(function ($status) {
             return $status ?: 'N/A';
         });
 
-        $show->field('hod_comment', __('HOD Comment'))->display(function ($comment) {
+        $show->field('hod_comment', __('HOD Comment'))->as(function ($comment) {
             return $comment ?: 'N/A';
         });
-        $show->field('gm_comment', __('GM Comment'))->display(function ($comment) {
+        $show->field('gm_comment', __('GM Comment'))->as(function ($comment) {
             return $comment ?: 'N/A';
         });
 
@@ -515,7 +547,7 @@ class VehicleRequestController extends AdminController
                 $applicantCanEdit = false;
             }
         }
- 
+
         if ($applicantCanEdit) {
             $u = Admin::user();
 
@@ -591,9 +623,9 @@ class VehicleRequestController extends AdminController
             $form->hidden('gm_status', __('Status'))->default('Pending');
             $form->hidden('security_exit_status', __('Status'))->default('Pending');
             $form->hidden('security_return_status', __('Status'))->default('Pending');
-        } 
-        
-        if($record != null){
+        }
+
+        if ($record != null) {
 
             $form->display('applicant_name', __('Requestor name'))->default($record->applicant->name);
 
@@ -602,11 +634,11 @@ class VehicleRequestController extends AdminController
                 $form->display('vehicle_name', __('Vehicle'))->default($record->vehicle->registration_number . ' - ' . $record->vehicle->brand . ' - ' . $record->vehicle->model . ' - ' . $record->vehicle->vehicle_type);
             } else if ($record->type == 'Materials') {
 
-                if ($applicantCanEdit) {  
+                if ($applicantCanEdit) {
                     $form->hasMany('materialItems', 'Click on "Add New" to add Material Item Requested For', function (Form\NestedForm $form) {
                         $form->text('type', 'Material Requested')->rules('required');
                         $form->decimal('quantity', 'Material Quantity')->rules('required');
-                        $form->text('unit', 'Unit')->rules('required');
+                        $form->text('unit', 'Serial Number')->rules('required');
                         $form->image('description', 'Photo');
                     });
                 }
@@ -640,7 +672,7 @@ class VehicleRequestController extends AdminController
                     $materials = '<table class="table table-bordered"><thead><tr>
                         <th>Material Name</th>
                         <th>Quantity</th>
-                        <th>Unit</th>
+                        <th>Serial Number</th>
                         <th>Description</th> 
                     </tr></thead><tbody>';
                     foreach ($record->materialItems as $item) {
