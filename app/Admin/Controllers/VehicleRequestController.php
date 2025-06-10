@@ -72,7 +72,7 @@ class VehicleRequestController extends AdminController
             $filter->equal('applicant_id', __('Requestor'))
                 ->select(Utils::get_dropdown(\App\Models\User::class, ['name', 'id']));
             $filter->equal('vehicle_id', __('Vehicle'))
-                ->select(Utils::get_dropdown(\App\Models\Vehicle::class, ['registration_number', 'id', 'brand', 'model', 'vehicle_type']));
+                ->select(Utils::get_dropdown(\App\Models\Vehicle::class, ['name',   'vehicle_type']));
 
             //html that says, if vehicle is not found, click here to add a new vehicle and refresh the page after adding
 
