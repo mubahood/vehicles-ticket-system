@@ -591,7 +591,9 @@ class VehicleRequestController extends AdminController
             $form->hidden('gm_status', __('Status'))->default('Pending');
             $form->hidden('security_exit_status', __('Status'))->default('Pending');
             $form->hidden('security_return_status', __('Status'))->default('Pending');
-        } else {
+        } 
+        
+        if($record != null){
 
             $form->display('applicant_name', __('Requestor name'))->default($record->applicant->name);
 
@@ -600,8 +602,8 @@ class VehicleRequestController extends AdminController
                 $form->display('vehicle_name', __('Vehicle'))->default($record->vehicle->registration_number . ' - ' . $record->vehicle->brand . ' - ' . $record->vehicle->model . ' - ' . $record->vehicle->vehicle_type);
             } else if ($record->type == 'Materials') {
 
-                if ($applicantCanEdit) { 
-                    $forma->hasMany('materialItems', 'Click on "Add New" to add Material Item Requested For', function (Form\NestedForm $form) {
+                if ($applicantCanEdit) {  
+                    $form->hasMany('materialItems', 'Click on "Add New" to add Material Item Requested For', function (Form\NestedForm $form) {
                         $form->text('type', 'Material Requested')->rules('required');
                         $form->decimal('quantity', 'Material Quantity')->rules('required');
                         $form->text('unit', 'Unit')->rules('required');
