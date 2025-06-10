@@ -78,7 +78,7 @@ class UserController extends AdminController
                     return 'N/A';
                 }
             });
-        
+
         //Postion
         $grid->column('position', 'Position')
             ->display(function () {
@@ -162,9 +162,13 @@ class UserController extends AdminController
             ->creationRules(['required', "unique:{$connection}.{$userTable}"])
             ->updateRules(['required', "unique:{$connection}.{$userTable},email,{{id}}"]);
 
+        //phone_number
+
         $form->text('name', trans('admin.name'))->rules('required');
         $form->radio('sex', 'Gender')
             ->options(['Male' => 'Male', 'Female' => 'Female']);
+
+        $form->text('phone_number', 'Phone Number');
         $departments = Departmet::all()->pluck('name', 'id');
         //companies
         $companies = Company::all()->pluck('name', 'id');
@@ -177,7 +181,7 @@ class UserController extends AdminController
         //position
         $form->text('position', 'Position')
             ->help('Enter the position of the user in the company.')
-            ->rules('nullable|max:255'); 
+            ->rules('nullable|max:255');
 
         $form->file('whatsapp', 'Signature file')
             ->help('Upload your signature file. It will be used in the system for signing documents.')
@@ -192,7 +196,7 @@ class UserController extends AdminController
             */
 
         $form->checkbox('roles', trans('admin.roles'))->options($roleModel::all()->pluck('name', 'id'))
-        ->stacked();
+            ->stacked();
         $form->radio('change_password', 'Change Password')
             ->options(['Yes' => 'Yes', 'No' => 'No'])
             ->default('No')
@@ -208,7 +212,7 @@ class UserController extends AdminController
         //notify_account_created_by_email notify user by email when account is created
 
         if ($form->isCreating()) {
-            $form->radio('notify_account_created_by_email', 'Notify User by Email on Account Creation') 
+            $form->radio('notify_account_created_by_email', 'Notify User by Email on Account Creation')
                 ->options(['Yes' => 'Yes', 'No' => 'No'])
                 ->default('Yes')
                 ->rules('required');

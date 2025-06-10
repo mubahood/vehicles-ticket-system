@@ -495,10 +495,10 @@ class VehicleRequestController extends AdminController
             $form->hidden('applicant_id', __('Applicant'))->default($u->id);
             $form->display('applicant_name', __('Applicant'))->default($u->name);
 
-            $form->datetime('requested_departure_time', __('Requested Departure Time'))->rules('required');
+            $form->datetime('requested_departure_time', __('Departure Time'))->rules('required');
 
             if (in_array('vehicle-requests', $segs)) {
-                $form->datetime('requested_return_time', __('Requested Check In'))->rules('required');
+                $form->datetime('requested_return_time', __('Arrival Time'))->rules('required');
             }
 
 
@@ -510,10 +510,10 @@ class VehicleRequestController extends AdminController
             <a href="' . admin_url('vehicles/create') . '" class="btn btn-xs btn-primary" target="_blank">Add New Vehicle</a>');
                 $users = \App\Models\User::where('id', '!=', $u->id)->get();
 
-                $form->radio('is_somisy_vehicle', 'Is this a Somisy vehicle?')->options(['Yes' => 'Yes', 'No' => 'No'])->rules('required');
-                $form->radio('is_camp_resident', 'Is this a camp resident?')->options(['Yes' => 'Yes', 'No' => 'No'])->rules('required');
+                $form->radio('is_somisy_vehicle', 'Somisy vehicle?')->options(['Yes' => 'Yes', 'No' => 'No'])->rules('required');
+                $form->radio('is_camp_resident', 'Camp resident?')->options(['Yes' => 'Yes', 'No' => 'No'])->rules('required');
                 $form->radio('expatirate_type', 'Expatriate type')->options(['Yes' => 'Yes', 'No' => 'No', 'Escort' => 'Escort'])->rules('required');
-                $form->radio('licence_type', 'Licence type')->options(['Mali' => 'Mali', 'International' => 'International', 'No licence' => 'No licence'])->rules('required');
+                $form->radio('licence_type', 'Licence type')->options(['Mali' => 'Mali', 'International' => 'International', 'Foreign DL' => 'Foreign DL'])->rules('required');
 
 
                 $form->divider();
@@ -523,7 +523,12 @@ class VehicleRequestController extends AdminController
 
                 //has many drivers 
                 $form->hasMany('drivers', 'Click on "Add New" to add Driver', function (Form\NestedForm $form) use ($users) {
-                    $form->select('driver_id', 'Driver')->options($users->pluck('name', 'id'))->rules('required');
+                    $drivers = [];
+                    foreach ($users as $user) {
+                        $drivers[$user->id] = $user->name. ' - ' . $user->phone_number;
+                    }
+
+                    $form->select('driver_id', 'Driver')->options($drivers)->rules('required');
                 });
 
                 $form->divider();
