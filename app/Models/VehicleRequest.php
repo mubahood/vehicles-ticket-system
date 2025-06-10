@@ -327,7 +327,7 @@ class VehicleRequest extends Model
     {
         if ($this->type == 'Vehicle') {
             if ($this->vehicle) {
-                return $this->vehicle->registration_number . ' - ' . $this->vehicle->brand . ' - ' . $this->vehicle->model . ' - ' . $this->vehicle->vehicle_type;
+                return $this->vehicle->registration_number .   ' - ' . $this->vehicle->vehicle_type;
             } else {
                 return 'N/A';
             }
