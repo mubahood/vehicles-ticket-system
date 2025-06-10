@@ -72,7 +72,7 @@ class VehicleRequestController extends AdminController
             $filter->equal('applicant_id', __('Requestor'))
                 ->select(Utils::get_dropdown(\App\Models\User::class, ['name', 'id']));
             $filter->equal('vehicle_id', __('Vehicle'))
-                ->select(Utils::get_dropdown(\App\Models\Vehicle::class, ['name',   'vehicle_type']));
+                ->select(Utils::get_dropdown(\App\Models\Vehicle::class, ['name',  'vehicle_type']));
 
             //html that says, if vehicle is not found, click here to add a new vehicle and refresh the page after adding
 
@@ -408,8 +408,7 @@ class VehicleRequestController extends AdminController
         });
         $show->field('vehicle_id', __('Vehicle'))->as(function ($vehicle_id) {
             if ($this->vehicle) {
-                return $this->vehicle->registration_number . ' - ' . $this->vehicle->brand
-                    . ' - ' . $this->vehicle->model . ' - ' . $this->vehicle->vehicle_type;
+                return $this->vehicle->registration_number . ' - '  . $this->vehicle->vehicle_type;
             }
             return 'N/A';
         });
@@ -505,7 +504,7 @@ class VehicleRequestController extends AdminController
             if (in_array('vehicle-requests', $segs)) {
                 $name_of_range = "Departure and Check In";
                 $form->hidden('type', __('Type'))->default('Vehicle');
-                $form->select('vehicle_id', __('Vehicle'))->options(Utils::get_dropdown(\App\Models\Vehicle::class, ['registration_number', 'id', 'brand', 'model', 'vehicle_type']))->rules('required');
+                $form->select('vehicle_id', __('Vehicle'))->options(Utils::get_dropdown(\App\Models\Vehicle::class, ['registration_number',   'vehicle_type']))->rules('required');
                 $form->html('if vehicle is not found, click here to add a new vehicle and refresh the page after adding<br>
             <a href="' . admin_url('vehicles/create') . '" class="btn btn-xs btn-primary" target="_blank">Add New Vehicle</a>');
                 $users = \App\Models\User::where('id', '!=', $u->id)->get();
