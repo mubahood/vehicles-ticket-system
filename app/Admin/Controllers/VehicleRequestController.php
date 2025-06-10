@@ -492,8 +492,8 @@ class VehicleRequestController extends AdminController
         if ($form->isCreating()) {
             $u = Admin::user();
 
-            $form->hidden('applicant_id', __('Applicant'))->default($u->id);
-            $form->display('applicant_name', __('Applicant'))->default($u->name);
+            $form->hidden('applicant_id', __('Requestor'))->default($u->id);
+            $form->display('applicant_name', __('Requestor'))->default($u->name);
 
             $form->datetime('requested_departure_time', __('Departure Time'))->rules('required');
 
