@@ -656,13 +656,13 @@ class VehicleRequestController extends AdminController
                 if ($record->type == 'Vehicle') {
                     $form->display('requested_return_time', 'Requested Check In')
                         ->default(Utils::my_date_1($record->requested_return_time));
-                }
-                $form->display('destination', 'Destination')
-                    ->default($record->destination ?: 'N/A');
-                //justification
-                $form->display('justification', 'Justification')
-                    ->default($record->justification ?: 'N/A');
 
+                    $form->display('destination', 'Destination')
+                        ->default($record->destination ?: 'N/A');
+                    //justification
+                    $form->display('justification', 'Justification')
+                        ->default($record->justification ?: 'N/A');
+                }
                 //if type
                 if ($record->type == 'Vehicle') {
                     $form->display('vehicle_name', 'Vehicle')
