@@ -515,7 +515,7 @@ class VehicleRequestController extends AdminController
                 $applicantCanEdit = false;
             }
         }
-
+ 
         if ($applicantCanEdit) {
             $u = Admin::user();
 
@@ -600,8 +600,8 @@ class VehicleRequestController extends AdminController
                 $form->display('vehicle_name', __('Vehicle'))->default($record->vehicle->registration_number . ' - ' . $record->vehicle->brand . ' - ' . $record->vehicle->model . ' - ' . $record->vehicle->vehicle_type);
             } else if ($record->type == 'Materials') {
 
-                if ($form->isCreating()) {
-                    $form->hasMany('materialItems', 'Click on "Add New" to add Material Item Requested For', function (Form\NestedForm $form) {
+                if ($applicantCanEdit) { 
+                    $forma->hasMany('materialItems', 'Click on "Add New" to add Material Item Requested For', function (Form\NestedForm $form) {
                         $form->text('type', 'Material Requested')->rules('required');
                         $form->decimal('quantity', 'Material Quantity')->rules('required');
                         $form->text('unit', 'Unit')->rules('required');
