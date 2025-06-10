@@ -487,8 +487,36 @@ class VehicleRequestController extends AdminController
         $form = new Form(new VehicleRequest());
         $segs = request()->segments();
         $name_of_range = "";
+        $id = null;
+        $record = null;
 
+        if ($form->isEditing()) {
+            $id = request()->segments()[1];
+            $record = VehicleRequest::find($id);
+
+            if ($record == null) {
+                throw new \Exception("Record not found");
+            }
+        }
+
+        $applicantCanEdit = false;
         if ($form->isCreating()) {
+            $applicantCanEdit = true;
+        }
+
+
+        $u = Admin::user();
+
+        if ($record != null && $u != null) {
+            if ($u->id == $record->applicant_id) {
+                $applicantCanEdit = true;
+            }
+            if ($record->gm_status != 'Pending') {
+                $applicantCanEdit = false;
+            }
+        }
+
+        if ($applicantCanEdit) {
             $u = Admin::user();
 
             $form->hidden('applicant_id', __('Requestor'))->default($u->id);
@@ -524,7 +552,7 @@ class VehicleRequestController extends AdminController
                 $form->hasMany('drivers', 'Click on "Add New" to add Driver', function (Form\NestedForm $form) use ($users) {
                     $drivers = [];
                     foreach ($users as $user) {
-                        $drivers[$user->id] = $user->name. ' - ' . $user->phone_number;
+                        $drivers[$user->id] = $user->name . ' - ' . $user->phone_number;
                     }
 
                     $form->select('driver_id', 'Driver')->options($drivers)->rules('required');
@@ -564,12 +592,7 @@ class VehicleRequestController extends AdminController
             $form->hidden('security_exit_status', __('Status'))->default('Pending');
             $form->hidden('security_return_status', __('Status'))->default('Pending');
         } else {
-            $id = request()->segments()[1];
-            $record = VehicleRequest::find($id);
 
-            if ($record == null) {
-                throw new \Exception("Record not found");
-            }
             $form->display('applicant_name', __('Requestor name'))->default($record->applicant->name);
 
             //if type is vehicle
