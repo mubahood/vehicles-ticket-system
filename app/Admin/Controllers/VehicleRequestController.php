@@ -427,6 +427,47 @@ class VehicleRequestController extends AdminController
             $show->field('justification', __('Justification'))->as(function ($justification) {
                 return $justification ?: 'N/A';
             });
+
+            $show->field('is_somisy_vehicle', __('Is Somisy Vehicle'))->as(function ($value) { 
+                return $value == 'Yes' ? 'Yes' : 'No';
+            });
+            $show->field('is_camp_resident', __('Is Camp Resident'))->as(function ($value) {
+                return $value == 'Yes' ? 'Yes' : 'No';
+            });
+            $show->field('expatirate_type', __('Expatriate Type'))->as(function ($value) {
+                return $value == 'Yes' ? 'Yes' : ($value == 'Escort' ? 'Escort' : 'No');
+            });
+            $show->field('licence_type', __('Licence Type'))->as(function ($value) {
+                return $value ?: 'N/A';
+            });
+            $show->field('requested_departure_time', __('Requested Departure Time'))->as(function ($value) {
+                return $value ? Utils::my_date($value) : 'N/A';
+            });
+            $show->field('requested_return_time', __('Requested Return Time'))->as(function ($value) {
+                return $value ? Utils::my_date($value) : 'N/A';
+            });
+            $show->field('actual_departure_time', __('Actual Departure Time'))->as(function ($value) {
+                return $value ? Utils::my_date($value) : 'N/A';
+            });
+            $show->field('actual_return_time', __('Actual Return Time'))->as(function ($value) {
+                return $value ? Utils::my_date($value) : 'N/A';
+            });
+            $show->field('drivers', __('Drivers'))->as(function ($drivers) {
+                if ($drivers && count($drivers)) {
+                    $names = [];
+                    foreach ($drivers as $driver) {
+                        if ($driver->driver && $driver->driver->name) {
+                            $names[] = $driver->driver->name;
+                        }
+                    }
+                    return implode(', ', $names);
+                }
+                return 'N/A';
+            });
+            $show->field('materials_requested', __('Passenger information'))->as(function ($value) {
+                return $value ?: 'N/A';
+            });
+
         }
         if ($record->type == 'Materials') {
             $show->field('materialItems', __('Materials Requested'))->as(function ($materialItems) {
@@ -631,7 +672,7 @@ class VehicleRequestController extends AdminController
 
             //if type is vehicle
             if ($record->type == 'Vehicle') {
-                $form->display('vehicle_name', __('Vehicle'))->default($record->vehicle->registration_number . ' - ' . $record->vehicle->brand . ' - ' . $record->vehicle->model . ' - ' . $record->vehicle->vehicle_type);
+                $form->display('vehicle_name', __('Vehicle'))->default($record->vehicle->registration_number  . ' - ' . $record->vehicle->vehicle_type);
             } else if ($record->type == 'Materials') {
 
                 if ($applicantCanEdit) {
@@ -650,11 +691,11 @@ class VehicleRequestController extends AdminController
 
             if (($u->isRole('gm') || $u->isRole('hod')) && $record != null) {
 
-                $form->display('requested_departure_time', 'Requested Departure Time')
+                $form->display('requested_departure_time', 'Departure Time')
                     ->default(Utils::my_date_1($record->requested_departure_time));
 
                 if ($record->type == 'Vehicle') {
-                    $form->display('requested_return_time', 'Requested Check In')
+                    $form->display('requested_return_time', 'Arrival Time')
                         ->default(Utils::my_date_1($record->requested_return_time));
 
                     $form->display('destination', 'Destination')
@@ -730,7 +771,7 @@ class VehicleRequestController extends AdminController
                     //licence_type
                     $form->display('licence_type', 'Licence Type')->default($record->licence_type);
                 }
-            } 
+            }
 
 
             if ($u->isRole('hod')) {
