@@ -717,19 +717,20 @@ class VehicleRequestController extends AdminController
                 } else {
                     $co_drivers = 'N/A';
                 }
+                if ($record->type == 'Vehicle') {
+                    //is_somisy_vehicle display Yes or No
+                    $form->display('is_somisy_vehicle', 'Is Somisy Vehicle')->default($record->is_somisy_vehicle == 'Yes' ? 'Yes' : 'No');
 
-                //is_somisy_vehicle display Yes or No
-                $form->display('is_somisy_vehicle', 'Is Somisy Vehicle')->default($record->is_somisy_vehicle == 'Yes' ? 'Yes' : 'No');
+                    //is_camp_resident
+                    $form->display('is_camp_resident', 'Is Camp Resident')->default($record->is_camp_resident == 'Yes' ? 'Yes' : 'No');
 
-                //is_camp_resident
-                $form->display('is_camp_resident', 'Is Camp Resident')->default($record->is_camp_resident == 'Yes' ? 'Yes' : 'No');
+                    //expatirate_type
+                    $form->display('expatirate_type', 'Expatriate Type')->default($record->expatirate_type == 'Yes' ? 'Yes' : ($record->expatirate_type == 'Escort' ? 'Escort' : 'No'));
 
-                //expatirate_type
-                $form->display('expatirate_type', 'Expatriate Type')->default($record->expatirate_type == 'Yes' ? 'Yes' : ($record->expatirate_type == 'Escort' ? 'Escort' : 'No'));
-
-                //licence_type
-                $form->display('licence_type', 'Licence Type')->default($record->licence_type);
-            }
+                    //licence_type
+                    $form->display('licence_type', 'Licence Type')->default($record->licence_type);
+                }
+            } 
 
 
             if ($u->isRole('hod')) {
